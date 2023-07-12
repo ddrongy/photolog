@@ -26,11 +26,15 @@ public class UserService {
 
 
 
-    public Long save(AddUserRequest dto) {
+    public Long save(AddUserRequest request) {
+        userRepository.findByEmail(request.getEmail())
+                .ifPresent(member -> {
+                    throw new IllegalArgumentException("아이디 중복");
+                });
         return userRepository.save(User.builder()
-                .email(dto.getEmail())
-                .nickName(dto.getNickName())
-                .password(passwordEncoder.encode(dto.getPassword()))
+                .email(request.getEmail())
+                .nickName(request.getNickName())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .build()).getId();
 
     }
