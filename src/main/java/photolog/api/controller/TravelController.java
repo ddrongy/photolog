@@ -22,8 +22,8 @@ public class TravelController {
     private final S3Service s3Service;
 
     @PostMapping("/post")
-    public ResponseEntity<ResponseDto<Long>> uploadPost(@RequestPart("content") String title,
-                                                        @RequestPart("imgUrl") List<MultipartFile> multipartFiles) {
+    public ResponseEntity<ResponseDto<Long>> uploadPost(@RequestPart("title") String title,
+                                                        @RequestPart("img") List<MultipartFile> multipartFiles) {
         if (multipartFiles == null) {
             throw new IllegalArgumentException("이미지 입력 없음");
         }
