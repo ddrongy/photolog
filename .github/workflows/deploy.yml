@@ -9,7 +9,8 @@ env:
   AWS_REGION: ap-northeast-1
   S3_BUCKET_NAME: photolog-github-actions-s3-bucket
   CODE_DEPLOY_APPLICATION_NAME: photolog-codedeploy-app
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }}
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: photolog-codedeploy-deployment-group
+
 
 permissions:
   contents: read
