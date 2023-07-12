@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import photolog.api.domain.User;
 import photolog.api.dto.AddUserRequest;
 import photolog.api.dto.LoginUserRequest;
+import photolog.api.dto.LoginUserResponse;
 import photolog.api.repository.UserRepository;
 import photolog.api.utils.JwtUtil;
 
@@ -34,7 +35,7 @@ public class UserService {
 
     }
 
-    public String login(LoginUserRequest request) {
+    public LoginUserResponse login(LoginUserRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new IllegalArgumentException("email 존재하지 않음"));
         // password 틀림
@@ -43,7 +44,7 @@ public class UserService {
         }
         String token = JwtUtil.createJwt(user.getUsername(), secretKey, expireTimeMs);
 
-        return "Bearer " + token;
+        return new LoginUserResponse(user.getId(), "Bearer " + token);
     }
     public void delete(Long userId) {
         userRepository.deleteById(userId);

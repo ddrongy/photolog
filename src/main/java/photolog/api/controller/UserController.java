@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import photolog.api.dto.AddUserRequest;
 import photolog.api.dto.LoginUserRequest;
+import photolog.api.dto.LoginUserResponse;
 import photolog.api.service.UserService;
 
 @Tag(name = "user", description = "유저 API")
@@ -31,11 +32,11 @@ public class UserController {
     // 로그인
     @PostMapping("/login")
     @Operation(summary = "login user", description = "유저 로그인")
-    public ResponseEntity<String> login(@RequestBody LoginUserRequest request) {
-        String token = userService.login(request);
+    public ResponseEntity<LoginUserResponse> login(@RequestBody LoginUserRequest request) {
+        LoginUserResponse response = userService.login(request);
 
         return ResponseEntity.ok()
-                .body(token);
+                .body(response);
     }
 
     // 회원 정보 삭제
