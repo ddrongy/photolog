@@ -25,6 +25,13 @@ public class JwtFilter extends OncePerRequestFilter {
     private final String secretKey;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/api/user/signup") || path.startsWith("/api/user/login")
+                || path.startsWith("/v3/") || path.startsWith("/swagger-ui/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         final String authorization = request.getHeader("Authorization");
