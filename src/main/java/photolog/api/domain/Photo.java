@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.joda.time.DateTime;
 
 import java.time.LocalDateTime;
 
@@ -14,28 +13,30 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Photo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "img_url", nullable = false)
     private String imgUrl;
 
-    @Column
+    @Column(name = "date_time", nullable = false)
     private LocalDateTime dateTime;
 
-    private String description;
-
     @Embedded
-    private Address address;
-
-    @Embedded
-    private Location location;
+    private Coordinate coordinate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "travel_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Travel travel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Location location;
 
     //== 연관관계 편의 메서드 ==//
     public void setTravel (Travel travel) {
@@ -43,13 +44,18 @@ public class Photo {
         travel.getPhotos().add(this);
     }
 
+    public void setLocation (Location location) {
+        this.location = location;
+        location.getPhotos().add(this);
+    }
+
     //== 생성 메서드 ==//
-    public static Photo createPhoto(Travel travel, String imgUrl, LocalDateTime dateTime, Location location){
+    public static Photo createPhoto(Travel travel, String imgUrl, LocalDateTime dateTime, Coordinate coordinate){
         Photo photo = new Photo();
         photo.setTravel(travel);
         photo.setImgUrl(imgUrl);
         photo.setDateTime(dateTime);
-        photo.setLocation(location);
+        photo.setLocation(coordinate);
 
         return photo;
     }
@@ -58,8 +64,8 @@ public class Photo {
         this.dateTime = dateTime;
     }
 
-    private void setLocation (Location location) {
-        this.location = location;
+    private void setLocation (Coordinate location) {
+        this.coordinate = location;
     }
 
     private void setImgUrl (String imgUrl) {

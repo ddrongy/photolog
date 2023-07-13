@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @Getter
 @NoArgsConstructor
-public class Location {
+public class Coordinate {
     private Double longitude;
     private Double latitude;
 
-    public Location(Double longitude, Double latitude) {
+    public Coordinate(Double longitude, Double latitude) {
         this.longitude = longitude;
         this.latitude = latitude;
     }
