@@ -23,7 +23,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final UserService userService;
     private final String secretKey;
-
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();

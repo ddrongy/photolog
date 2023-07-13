@@ -34,7 +34,6 @@ public class UserService {
                 .nickName(request.getNickName())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build()).getId();
-
     }
 
     public LoginUserResponse login(LoginUserRequest request) {

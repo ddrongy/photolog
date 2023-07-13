@@ -11,23 +11,23 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 public class Travel {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @Column(nullable = false)
     private String title;
 
     @Transient
-    private final List<Photo> imgList = new ArrayList<>();
+    @OneToMany(mappedBy = "travel")
+    private final List<Photo> Photos = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private User user;
 
-    public Travel(String title, User user) {
-        this.title = title;
+    public Travel(User user) {
         this.user = user;
     }
+
+
 }

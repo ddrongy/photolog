@@ -33,6 +33,20 @@ public class S3Service  {
     @Value("${cloud.aws.region.static}")
     private String region;
 
+    public String uploadOne(MultipartFile file) {
+        String fileName = createFileName(file.getOriginalFilename());
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentLength(file.getSize());
+        objectMetadata.setContentType(file.getContentType());
+
+        try(InputStream inputStream = file.getInputStream()) {
+            s3Client.putObject(new PutObjectRequest(bucket + "/post/image", fileName, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            return s3Client.getUrl(bucket + "/post/image", fileName).toString();
+        } catch(IOException e) {
+            throw new IllegalArgumentException("파일 업로드 오류");
+        }
+    }
 
     public List<String> upload(List<MultipartFile> multipartFile) {
         List<String> imgUrlList = new ArrayList<>();
@@ -77,4 +91,5 @@ public class S3Service  {
         }
         return fileName.substring(fileName.lastIndexOf("."));
     }
+
 }
