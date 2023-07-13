@@ -17,16 +17,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ResponseDto<Void> response = new ResponseDto<>(false, exception.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    // Here you can handle specific exceptions
-    // For instance if you have a custom exception called UserNotFoundException
-    // you can handle it like so:
-    /*
-    @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException exception) {
-        ResponseDto<Void> response = new ResponseDto<>(false, exception.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-    */
 }
