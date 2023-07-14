@@ -52,30 +52,26 @@ public class TravelService {
         Map<LocalDate, List<Photo>> photosByDate = photos.stream()
                 .collect(Collectors.groupingBy(photo -> photo.getDateTime().toLocalDate(), TreeMap::new, Collectors.toList()));
 
-        LocalDate startDate = LocalDate.MAX;
-        LocalDate endDate = LocalDate.MIN;
+        LocalDate startDate = photosByDate.keySet().stream().min(LocalDate::compareTo).orElse(LocalDate.MAX);
+        LocalDate endDate = photosByDate.keySet().stream().max(LocalDate::compareTo).orElse(LocalDate.MIN);
 
-        int sequence = 1;
-        for (Map.Entry<LocalDate, List<Photo>> dateEntry : photosByDate.entrySet()) {
-            Day day = Day.createDay(sequence++, dateEntry.getKey(), travel);
+        int totalDays = (int) DAYS.between(startDate, endDate) + 1;
 
+        for (int i = 0; i < totalDays; i++) {
+            LocalDate currentDayDate = startDate.plusDays(i);
+            Day day = Day.createDay(i + 1, currentDayDate, travel);
             dayRepository.save(day);
 
-            if (day.getDate().isBefore(startDate)) {
-                startDate = day.getDate();
-            }
-            if (day.getDate().isAfter(endDate)) {
-                endDate = day.getDate();
-            }
+            List<Photo> photosOfTheDay = photosByDate.getOrDefault(currentDayDate, new ArrayList<>());
 
-            Map<Coordinate, List<Photo>> photosByLocation = dateEntry.getValue().stream()
+            Map<Coordinate, List<Photo>> photosByLocation = photosOfTheDay.stream()
                     .collect(Collectors.groupingBy(Photo::getCoordinate));
 
             for (Map.Entry<Coordinate, List<Photo>> locationEntry : photosByLocation.entrySet()) {
-                Location location = locationRepository.findByCoordinateAndDate(locationEntry.getKey(), day.getDate())
+                Location location = locationRepository.findByCoordinateAndDate(locationEntry.getKey(), currentDayDate)
                         .orElseGet(() -> {
                             Address address = locationEntry.getValue().get(0).getAddress();
-                            Location newLocation = Location.createLocation(locationEntry.getKey(), day.getDate(), day, address);
+                            Location newLocation = Location.createLocation(locationEntry.getKey(), currentDayDate, day, address);
                             locationRepository.save(newLocation);
                             return newLocation;
                         });
@@ -87,7 +83,8 @@ public class TravelService {
                 }
             }
         }
-        travel.updateDate(startDate, endDate, (int) DAYS.between(startDate, endDate) + 1);
+
+        travel.updateDate(startDate, endDate, totalDays);
         travelRepository.save(travel);
     }
 }
