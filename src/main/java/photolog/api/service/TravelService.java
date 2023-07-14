@@ -74,7 +74,8 @@ public class TravelService {
             for (Map.Entry<Coordinate, List<Photo>> locationEntry : photosByLocation.entrySet()) {
                 Location location = locationRepository.findByCoordinateAndDate(locationEntry.getKey(), day.getDate())
                         .orElseGet(() -> {
-                            Location newLocation = Location.createLocation(locationEntry.getKey(), day.getDate(), day);
+                            Address address = locationEntry.getValue().get(0).getAddress();
+                            Location newLocation = Location.createLocation(locationEntry.getKey(), day.getDate(), day, address);
                             locationRepository.save(newLocation);
                             return newLocation;
                         });

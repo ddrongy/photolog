@@ -46,10 +46,11 @@ public class Location {
     }
 
     //== 생성 메서드 ==//
-    public static Location createLocation(Coordinate coordinate, LocalDate date, Day day){
+    public static Location createLocation(Coordinate coordinate, LocalDate date, Day day, Address address){
         Location location = new Location();
         location.setDay(day);
         location.setCoordinate(coordinate);
+        location.setAddress(address);
         location.setDate(date);
 
         return location;
@@ -57,6 +58,9 @@ public class Location {
 
     private void setCoordinate(Coordinate coordinate) {
         this.coordinate = coordinate;
+    }
+    private void setAddress(Address address) {
+        this.address = address;
     }
 
     private void setDate(LocalDate date) {

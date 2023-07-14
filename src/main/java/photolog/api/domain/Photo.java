@@ -28,6 +28,9 @@ public class Photo {
     @Embedded
     private Coordinate coordinate;
 
+    @Embedded
+    private Address address;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "travel_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -50,12 +53,13 @@ public class Photo {
     }
 
     //== 생성 메서드 ==//
-    public static Photo createPhoto(Travel travel, String imgUrl, LocalDateTime dateTime, Coordinate coordinate){
+    public static Photo createPhoto(Travel travel, String imgUrl, LocalDateTime dateTime, Coordinate coordinate, Address address){
         Photo photo = new Photo();
         photo.setTravel(travel);
         photo.setImgUrl(imgUrl);
         photo.setDateTime(dateTime);
-        photo.setLocation(coordinate);
+        photo.setCoordinate(coordinate);
+        photo.setAddress(address);
 
         return photo;
     }
@@ -64,8 +68,12 @@ public class Photo {
         this.dateTime = dateTime;
     }
 
-    private void setLocation (Coordinate location) {
+    private void setCoordinate (Coordinate location) {
         this.coordinate = location;
+    }
+
+    private void setAddress (Address address) {
+        this.address = address;
     }
 
     private void setImgUrl (String imgUrl) {

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import photolog.api.domain.Address;
 import photolog.api.domain.Coordinate;
 import photolog.api.dto.ResponseDto;
 import photolog.api.service.PhotoService;
@@ -25,10 +26,13 @@ public class PhotoController {
                                                        @RequestPart("img") MultipartFile multipartFile,
                                                        @RequestPart("dateTime") String dateTime,
                                                        @RequestPart("log") Double log,
-                                                       @RequestPart("lat") Double lat){
+                                                       @RequestPart("lat") Double lat,
+                                                       @RequestPart("city") String city,
+                                                       @RequestPart("fullAddress") String fullAddress
+                                                       ){
 
         String imgPath = s3Service.uploadOne(multipartFile);
-        photoService.photoSave(travelId, imgPath, dateTime, new Coordinate(log, lat));
+        photoService.photoSave(travelId, imgPath, dateTime, new Coordinate(log, lat), new Address(city, fullAddress));
 
         ResponseDto<Long> response = new ResponseDto<>();
         response.setStatus(true);

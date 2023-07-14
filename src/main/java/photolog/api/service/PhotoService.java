@@ -2,6 +2,7 @@ package photolog.api.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import photolog.api.domain.Address;
 import photolog.api.domain.Coordinate;
 import photolog.api.domain.Photo;
 import photolog.api.domain.Travel;
@@ -18,7 +19,7 @@ public class PhotoService {
     private final PhotoRepository photoRepository;
     private final TravelRepository travelRepository;
     
-    public Long photoSave(Long travelId, String imgUrl, String stringDateTime, Coordinate coordinate){
+    public Long photoSave(Long travelId, String imgUrl, String stringDateTime, Coordinate coordinate, Address address){
         // travel 조회
         Travel travel = travelRepository.findById(travelId).get();
 
@@ -26,7 +27,7 @@ public class PhotoService {
         LocalDateTime dateTime = LocalDateTime.parse(stringDateTime, formatter);
 
         // photo 생성
-        Photo photo = Photo.createPhoto(travel, imgUrl, dateTime, coordinate);
+        Photo photo = Photo.createPhoto(travel, imgUrl, dateTime, coordinate, address);
         photoRepository.save(photo);
 
         return photo.getId();
