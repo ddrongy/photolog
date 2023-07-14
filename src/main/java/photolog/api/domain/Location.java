@@ -40,15 +40,15 @@ public class Location {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Day day;
 
-    public void setDay(Day day) {
-        this.day = day;
-        day.getLocations().add(this);
-    }
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "travel_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Travel travel;
+
+    public void setDay(Day day) {
+        this.day = day;
+        day.getLocations().add(this);
+    }
 
     public void setTravel (Travel travel) {
         this.travel = travel;

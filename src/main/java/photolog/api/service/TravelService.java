@@ -55,16 +55,13 @@ public class TravelService {
         LocalDate startDate = photosByDate.keySet().stream().min(LocalDate::compareTo).orElse(LocalDate.MAX);
         LocalDate endDate = photosByDate.keySet().stream().max(LocalDate::compareTo).orElse(LocalDate.MIN);
 
-        int totalDays = (int) DAYS.between(startDate, endDate) + 1;
-
-        for (int i = 0; i < totalDays; i++) {
-            LocalDate currentDayDate = startDate.plusDays(i);
-            Day day = Day.createDay(i + 1, currentDayDate, travel);
+        int sequence = 1;
+        for (Map.Entry<LocalDate, List<Photo>> dateEntry : photosByDate.entrySet()) {
+            LocalDate currentDayDate = dateEntry.getKey();
+            Day day = Day.createDay(sequence++, currentDayDate, travel);
             dayRepository.save(day);
 
-            List<Photo> photosOfTheDay = photosByDate.getOrDefault(currentDayDate, new ArrayList<>());
-
-            Map<Coordinate, List<Photo>> photosByLocation = photosOfTheDay.stream()
+            Map<Coordinate, List<Photo>> photosByLocation = dateEntry.getValue().stream()
                     .collect(Collectors.groupingBy(Photo::getCoordinate));
 
             for (Map.Entry<Coordinate, List<Photo>> locationEntry : photosByLocation.entrySet()) {
@@ -84,6 +81,7 @@ public class TravelService {
             }
         }
 
+        int totalDays = sequence - 1;
         travel.updateDate(startDate, endDate, totalDays);
         travelRepository.save(travel);
     }
