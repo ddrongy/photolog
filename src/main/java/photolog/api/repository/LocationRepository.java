@@ -9,5 +9,5 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public interface LocationRepository extends JpaRepository<Location, Long> {
-    Optional<Location> findByCoordinateAndDate(Coordinate coordinate, LocalDate date);
+    Optional<Location> findByCoordinateAndDateAndTravelId(Coordinate coordinate, LocalDate date, Long travelId);
 }

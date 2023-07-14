@@ -68,10 +68,10 @@ public class TravelService {
                     .collect(Collectors.groupingBy(Photo::getCoordinate));
 
             for (Map.Entry<Coordinate, List<Photo>> locationEntry : photosByLocation.entrySet()) {
-                Location location = locationRepository.findByCoordinateAndDate(locationEntry.getKey(), currentDayDate)
+                Location location = locationRepository.findByCoordinateAndDateAndTravelId(locationEntry.getKey(), currentDayDate, travel.getId())
                         .orElseGet(() -> {
                             Address address = locationEntry.getValue().get(0).getAddress();
-                            Location newLocation = Location.createLocation(locationEntry.getKey(), currentDayDate, day, address);
+                            Location newLocation = Location.createLocation(travel, locationEntry.getKey(), currentDayDate, day, address);
                             locationRepository.save(newLocation);
                             return newLocation;
                         });

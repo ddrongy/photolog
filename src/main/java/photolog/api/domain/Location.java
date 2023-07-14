@@ -45,9 +45,20 @@ public class Location {
         day.getLocations().add(this);
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "travel_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Travel travel;
+
+    public void setTravel (Travel travel) {
+        this.travel = travel;
+        travel.getLocations().add(this);
+    }
+
     //== 생성 메서드 ==//
-    public static Location createLocation(Coordinate coordinate, LocalDate date, Day day, Address address){
+    public static Location createLocation(Travel travel, Coordinate coordinate, LocalDate date, Day day, Address address){
         Location location = new Location();
+        location.setTravel(travel);
         location.setDay(day);
         location.setCoordinate(coordinate);
         location.setAddress(address);

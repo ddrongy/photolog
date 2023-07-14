@@ -32,6 +32,9 @@ public class Travel {
     private final List<Day> days = new ArrayList<>();
 
     @OneToMany(mappedBy = "travel")
+    private final List<Location> locations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "travel")
     private final List<Photo> photos = new ArrayList<>();
 
     public Travel(User user) {
