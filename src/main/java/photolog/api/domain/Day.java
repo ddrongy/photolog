@@ -38,7 +38,9 @@ public class Day {
 
     public void setTravel (Travel travel) {
         this.travel = travel;
-        travel.getDays().add(this);
+        if (!travel.getDays().contains(this)) {
+            travel.getDays().add(this);
+        }
     }
 
     //== 생성 메서드 ==//

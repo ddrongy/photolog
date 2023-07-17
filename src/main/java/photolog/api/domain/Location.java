@@ -41,7 +41,7 @@ public class Location {
     private final List<Photo> photos = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "day_id", nullable = false)
+    @JoinColumn(name = "day_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Day day;
 
@@ -57,7 +57,9 @@ public class Location {
 
     public void setTravel (Travel travel) {
         this.travel = travel;
-        travel.getLocations().add(this);
+        if (!travel.getLocations().contains(this)) {
+            travel.getLocations().add(this);
+        }
     }
 
     public void addPhoto(Photo photo) {

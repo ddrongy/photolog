@@ -78,4 +78,17 @@ public class PhotoController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
+
+    @DeleteMapping("/{photoId}")
+    @Operation(summary = "photo 삭제")
+    // photo 삭제시, travel, location 에서도 삭제되나 확인해야함
+    public ResponseEntity<ResponseDto<Void>> delete(@PathVariable Long photoId) {
+        photoService.delete(photoId);
+        ResponseDto<Void> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("Photo deletion successful.");
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
 }

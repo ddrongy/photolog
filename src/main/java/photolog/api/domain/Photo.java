@@ -44,7 +44,22 @@ public class Photo {
     //== 연관관계 편의 메서드 ==//
     public void setTravel (Travel travel) {
         this.travel = travel;
-        travel.getPhotos().add(this);
+        if (!travel.getPhotos().contains(this)) {
+            travel.getPhotos().add(this);
+        }
+    }
+    public void setLocation (Location location) {
+        this.location = location;
+        location.getPhotos().add(this);
+    }
+
+    public void delTravel () {
+        this.travel.getPhotos().remove(this);
+        this.travel = null;
+    }
+    public void delLocation () {
+        this.location.getPhotos().remove(this);
+        this.location = null;
     }
 
     public void changeLocation(Location newLocation) {
@@ -52,11 +67,6 @@ public class Photo {
             this.location.removePhoto(this);
         }
         this.location = newLocation;
-    }
-
-    public void setLocation (Location location) {
-        this.location = location;
-        location.getPhotos().add(this);
     }
 
     //== 생성 메서드 ==//

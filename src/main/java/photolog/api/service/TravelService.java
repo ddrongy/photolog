@@ -101,6 +101,9 @@ public class TravelService {
         travel.updateDate(startDate, endDate, totalDays);
         travelRepository.save(travel);
 
+        entityManager.flush();
+        entityManager.refresh(travel);
+
         int night = travel.getTotalDate();
         if (travel.getTotalDate() > 0) {
             night--;
@@ -125,5 +128,10 @@ public class TravelService {
         travelRepository.save(travel);
 
         return travel.getTitle();
+    }
+
+    @Transactional
+    public void delete(Long travelId) {
+        travelRepository.deleteById(travelId);
     }
 }
