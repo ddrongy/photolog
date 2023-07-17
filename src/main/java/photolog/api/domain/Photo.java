@@ -60,8 +60,6 @@ public class Photo {
         this.location = null;
     }
 
-
-
     public void changeLocation(Location newLocation) {
         if (this.location != null) {
             this.location.removePhoto(this);
