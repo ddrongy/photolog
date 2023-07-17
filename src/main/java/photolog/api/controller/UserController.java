@@ -51,11 +51,26 @@ public class UserController {
         NicknameResponse nicknameResponse = userService.changeNickname(id, request.getNewNickname());
         ResponseDto<NicknameResponse> response = new ResponseDto<>();
         response.setStatus(true);
-        response.setMessage("User login successful.");
+        response.setMessage("User change nickName successful.");
         response.setData(nicknameResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "유저 정보 조회")
+    public ResponseEntity<ResponseDto<GetUserResponse>> getUser(@PathVariable Long id){
+        GetUserResponse findUser = userService.getOneUser(id);
+
+        ResponseDto<GetUserResponse> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("User get info successful.");
+        response.setData(findUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+
     }
 
     @DeleteMapping ("/delete/{id}")

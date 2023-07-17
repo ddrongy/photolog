@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.User;
-import photolog.api.dto.User.AddUserRequest;
-import photolog.api.dto.User.LoginUserRequest;
-import photolog.api.dto.User.LoginUserResponse;
-import photolog.api.dto.User.NicknameResponse;
+import photolog.api.dto.User.*;
 import photolog.api.repository.UserRepository;
 import photolog.api.utils.JwtUtil;
 
@@ -47,6 +44,13 @@ public class UserService {
         String token = JwtUtil.createJwt(user.getUsername(), secretKey, expireTimeMs);
 
         return new LoginUserResponse(user.getId(), "Bearer " + token);
+    }
+
+    public GetUserResponse getOneUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("email 존재하지 않음"));
+
+        return new GetUserResponse(user.getEmail(), user.getNickName());
     }
 
     public void delete(Long userId) {
