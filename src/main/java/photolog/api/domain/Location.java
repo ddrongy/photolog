@@ -37,7 +37,7 @@ public class Location {
     @Column(name = "seq", nullable = false)
     private Integer sequence;
 
-    @OneToMany(mappedBy = "location")
+    @OneToMany(mappedBy = "location", cascade = CascadeType.REMOVE)
     private final List<Photo> photos = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
