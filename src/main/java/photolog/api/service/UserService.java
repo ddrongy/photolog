@@ -8,6 +8,7 @@ import photolog.api.domain.User;
 import photolog.api.dto.User.AddUserRequest;
 import photolog.api.dto.User.LoginUserRequest;
 import photolog.api.dto.User.LoginUserResponse;
+import photolog.api.dto.User.NicknameResponse;
 import photolog.api.repository.UserRepository;
 import photolog.api.utils.JwtUtil;
 
@@ -47,17 +48,21 @@ public class UserService {
 
         return new LoginUserResponse(user.getId(), "Bearer " + token);
     }
+
     public void delete(Long userId) {
         userRepository.deleteById(userId);
     }
 
-    public User findById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
+    public NicknameResponse changeNickname(Long userId, String newNickname) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new IllegalArgumentException("email 존재하지 않음"));
+
+        user.changeNickname(newNickname);
+
+        userRepository.save(user);
+
+        return new NicknameResponse(user.getNickName());
     }
 
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
-    }
+
 }

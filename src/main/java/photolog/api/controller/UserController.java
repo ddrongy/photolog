@@ -7,9 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import photolog.api.dto.User.AddUserRequest;
-import photolog.api.dto.User.LoginUserRequest;
-import photolog.api.dto.User.LoginUserResponse;
+import photolog.api.dto.User.*;
 import photolog.api.dto.ResponseDto;
 import photolog.api.service.UserService;
 
@@ -41,6 +39,20 @@ public class UserController {
         response.setStatus(true);
         response.setMessage("User login successful.");
         response.setData(loginResponse);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PostMapping("/nickName/{id}")
+    @Operation(summary = "유저 닉네임 변경")
+    public ResponseEntity<ResponseDto<NicknameResponse>> changeNickname(@PathVariable Long id,
+                                                                        @RequestBody NicknameRequest request) {
+        NicknameResponse nicknameResponse = userService.changeNickname(id, request.getNewNickname());
+        ResponseDto<NicknameResponse> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("User login successful.");
+        response.setData(nicknameResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
