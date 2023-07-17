@@ -5,14 +5,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.Location;
 import photolog.api.domain.Photo;
-import photolog.api.domain.Travel;
 import photolog.api.dto.Location.DescriptionRequest;
 import photolog.api.dto.Location.LocationResponse;
 import photolog.api.dto.Location.NameRequest;
-import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.repository.LocationRepository;
-
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 

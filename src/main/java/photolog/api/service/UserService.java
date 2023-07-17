@@ -4,7 +4,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +13,6 @@ import photolog.api.dto.User.*;
 import photolog.api.repository.UserRepository;
 import photolog.api.utils.JwtUtil;
 
-import java.io.File;
 import java.security.SecureRandom;
 import java.util.Random;
 
@@ -156,5 +154,13 @@ public class UserService {
         return tempPassword.toString();
     }
 
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(()-> new IllegalArgumentException("email 존재하지 않음"));
+    }
+
+    public void deleteAll() {
+        userRepository.deleteAll();
+    }
 
 }

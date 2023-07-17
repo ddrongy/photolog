@@ -40,7 +40,7 @@ public class UserController {
         response.setMessage("User login successful.");
         response.setData(loginResponse);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
 
@@ -54,7 +54,7 @@ public class UserController {
         response.setMessage("User change nickName successful.");
         response.setData(nicknameResponse);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
 
@@ -80,7 +80,7 @@ public class UserController {
         response.setMessage("User get info successful.");
         response.setData(findUser);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
 
     }
