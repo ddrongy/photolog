@@ -44,7 +44,9 @@ public class Photo {
     //== 연관관계 편의 메서드 ==//
     public void setTravel (Travel travel) {
         this.travel = travel;
-        travel.getPhotos().add(this);
+        if (!travel.getPhotos().contains(this)) {
+            travel.getPhotos().add(this);
+        }
     }
     public void setLocation (Location location) {
         this.location = location;

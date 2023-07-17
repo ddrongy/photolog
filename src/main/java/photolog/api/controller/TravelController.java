@@ -66,4 +66,16 @@ public class TravelController {
                 .body(response);
     }
 
+    @DeleteMapping ("/{travelId}")
+    @Operation(summary = "travel 삭제")
+    public ResponseEntity<ResponseDto<Void>> delete(@PathVariable Long travelId) {
+        travelService.delete(travelId);
+        ResponseDto<Void> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("travel deletion successful.");
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
 }

@@ -3,7 +3,8 @@ package photolog.api.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -28,13 +29,16 @@ public class Travel {
     @JoinColumn
     private User user;
 
-    @OneToMany(mappedBy = "travel")
+    @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private final List<Day> days = new ArrayList<>();
 
-    @OneToMany(mappedBy = "travel")
+    @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private final List<Location> locations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "travel")
+    @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private final List<Photo> photos = new ArrayList<>();
 
     public Travel(User user) {
