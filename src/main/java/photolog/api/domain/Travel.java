@@ -47,4 +47,8 @@ public class Travel {
         this.totalDate = totalDate;
     }
 
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
 }

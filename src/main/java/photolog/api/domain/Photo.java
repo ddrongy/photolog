@@ -47,6 +47,13 @@ public class Photo {
         travel.getPhotos().add(this);
     }
 
+    public void changeLocation(Location newLocation) {
+        if (this.location != null) {
+            this.location.removePhoto(this);
+        }
+        this.location = newLocation;
+    }
+
     public void setLocation (Location location) {
         this.location = location;
         location.getPhotos().add(this);

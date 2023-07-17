@@ -1,4 +1,4 @@
-package photolog.api.dto;
+package photolog.api.dto.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

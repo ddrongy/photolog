@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import photolog.api.dto.AddUserRequest;
-import photolog.api.dto.LoginUserRequest;
-import photolog.api.dto.LoginUserResponse;
+import photolog.api.dto.User.AddUserRequest;
+import photolog.api.dto.User.LoginUserRequest;
+import photolog.api.dto.User.LoginUserResponse;
 import photolog.api.dto.ResponseDto;
 import photolog.api.service.UserService;
 
@@ -21,7 +21,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    @Operation(summary = "signup user", description = "유저 회원가입")
+    @Operation(summary = "유저 회원가입")
     public ResponseEntity<ResponseDto<Long>> register(@RequestBody AddUserRequest request) {
         Long savedId = userService.save(request);
         ResponseDto<Long> response = new ResponseDto<>();
@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    @Operation(summary = "login user", description = "유저 로그인")
+    @Operation(summary = "유저 로그인")
     public ResponseEntity<ResponseDto<LoginUserResponse>> login(@RequestBody LoginUserRequest request) {
         LoginUserResponse loginResponse = userService.login(request);
         ResponseDto<LoginUserResponse> response = new ResponseDto<>();
@@ -42,19 +42,19 @@ public class UserController {
         response.setMessage("User login successful.");
         response.setData(loginResponse);
 
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
 
     @DeleteMapping ("/delete/{id}")
-    @Operation(summary = "delete user", description = "유저 회원탈퇴")
+    @Operation(summary = "유저 회원탈퇴")
     public ResponseEntity<ResponseDto<Void>> delete(@PathVariable Long id) {
         userService.delete(id);
         ResponseDto<Void> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("User deletion successful.");
 
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
 

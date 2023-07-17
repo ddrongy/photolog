@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.User;
-import photolog.api.dto.AddUserRequest;
-import photolog.api.dto.LoginUserRequest;
-import photolog.api.dto.LoginUserResponse;
+import photolog.api.dto.User.AddUserRequest;
+import photolog.api.dto.User.LoginUserRequest;
+import photolog.api.dto.User.LoginUserResponse;
 import photolog.api.repository.UserRepository;
 import photolog.api.utils.JwtUtil;
 

@@ -21,6 +21,8 @@ public class Location {
     @Column(name = "id", updatable = false)
     private Long id;
 
+    private String name;
+
     private String description;
 
     @Embedded
@@ -31,6 +33,9 @@ public class Location {
 
     @Column(name = "location_date", nullable = false)
     private LocalDate date;
+
+    @Column(name = "seq", nullable = false)
+    private Integer sequence;
 
     @OneToMany(mappedBy = "location")
     private final List<Photo> photos = new ArrayList<>();
@@ -55,14 +60,31 @@ public class Location {
         travel.getLocations().add(this);
     }
 
+    public void addPhoto(Photo photo) {
+        photos.add(photo);
+    }
+
+    public void removePhoto(Photo photo) {
+        photos.remove(photo);
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
     //== 생성 메서드 ==//
-    public static Location createLocation(Travel travel, Coordinate coordinate, LocalDate date, Day day, Address address){
+    public static Location createLocation(Travel travel, Coordinate coordinate, LocalDate date, Day day, Address address, Integer sequence){
         Location location = new Location();
         location.setTravel(travel);
         location.setDay(day);
         location.setCoordinate(coordinate);
         location.setAddress(address);
         location.setDate(date);
+        location.setSequence(sequence);
 
         return location;
     }
@@ -73,7 +95,9 @@ public class Location {
     private void setAddress(Address address) {
         this.address = address;
     }
-
+    private void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
     private void setDate(LocalDate date) {
         this.date = date;
     }
