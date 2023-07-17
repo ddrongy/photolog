@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
-import photolog.api.dto.Travel.CalculateResultResponse;
+import photolog.api.dto.Travel.CalculateResponse;
 import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.repository.*;
 
@@ -49,7 +49,7 @@ public class TravelService {
 
     // travel - day - location - photo 계산
     @Transactional
-    public List<Long> calTravel(Long travelId) {
+    public CalculateResponse calTravel(Long travelId) {
         Travel travel = travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
 
@@ -101,19 +101,21 @@ public class TravelService {
         travel.updateDate(startDate, endDate, totalDays);
         travelRepository.save(travel);
 
+        int night = travel.getTotalDate();
+        if (travel.getTotalDate() > 0) {
+            night--;
+        }
 
-        return travel.getLocations().stream()
+        List<Long> locationList = travel.getLocations().stream()
                 .map(Location::getId)
                 .collect(Collectors.toList());
+
+        return new CalculateResponse(night, travel.getTotalDate(),
+                travel.getStartDate(), travel.getEndDate(),
+                travel.getLocations().size(), travel.getPhotos().size(), locationList);
+
     }
 
-    public CalculateResultResponse calculateResult(Long travelId){
-        Travel travel = travelRepository.findById(travelId)
-                .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
-
-        return new CalculateResultResponse(travel.getTotalDate()-1, travel.getTotalDate(),
-                travel.getStartDate(), travel.getEndDate(), travel.getLocations().size());
-    }
 
     public String updateTitle(Long travelId, TitleRequest request) {
         Travel travel = travelRepository.findById(travelId)

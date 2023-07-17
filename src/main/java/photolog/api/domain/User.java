@@ -40,6 +40,11 @@ public class User implements UserDetails {
     public void changeNickname(String newNickname) {
         this.nickName = newNickname;
     }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("user"));
