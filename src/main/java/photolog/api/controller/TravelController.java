@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import photolog.api.dto.ResponseDto;
-import photolog.api.dto.Travel.CalculateResultResponse;
+import photolog.api.dto.Travel.CalculateResponse;
 
 import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.service.TravelService;
@@ -37,32 +37,19 @@ public class TravelController {
     }
 
     @PostMapping("/calculate/{travelId}")
-    @Operation(summary = "travel에 사진 추가가 완료된 후, 해당 api를 통해 나머지 정보 계산")
-    public ResponseEntity<ResponseDto<List<Long>>> calTravel(@PathVariable Long travelId){
-        List<Long> locationIds = travelService.calTravel(travelId);
+    @Operation(summary = "travel에 사진 추가가 완료된 후, 해당 api를 통해 나머지 정보 계산 후 계산된 결과 불러오기")
+    public ResponseEntity<ResponseDto<CalculateResponse>> calTravel(@PathVariable Long travelId){
+        CalculateResponse calculateResponse = travelService.calTravel(travelId);
 
-        ResponseDto<List<Long>> response = new ResponseDto<>();
+        ResponseDto<CalculateResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("Travel calculate successful.");
-        response.setData(locationIds);
+        response.setData(calculateResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
 
-    @GetMapping("/calResult/{travelId}")
-    @Operation(summary = "계산된 결과 불러오기, 총날짜, 시작날짜, 끝날짜 등..")
-    public ResponseEntity<ResponseDto<CalculateResultResponse>> calResultTravel(@PathVariable Long travelId){
-        CalculateResultResponse calculateResultResponse = travelService.calculateResult(travelId);
-
-        ResponseDto<CalculateResultResponse> response = new ResponseDto<>();
-        response.setStatus(true);
-        response.setMessage("Get travel calResult successful.");
-        response.setData(calculateResultResponse);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(response);
-    }
 
     @PatchMapping("/title/{travelId}")
     @Operation(summary = "여행 title 변경")
