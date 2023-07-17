@@ -5,11 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.Location;
 import photolog.api.domain.Photo;
-import photolog.api.domain.Travel;
 import photolog.api.dto.Location.DescriptionRequest;
 import photolog.api.dto.Location.LocationResponse;
 import photolog.api.dto.Location.NameRequest;
-import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.repository.LocationRepository;
 
 import java.time.LocalDate;
@@ -26,6 +24,7 @@ public class LocationService {
         Location location = locationRepository.findById(id).get();
 
         List<Photo> photos = location.getPhotos();
+
         List<String> imgUrls = photos.stream()
                 .map(Photo::getImgUrl)
                 .collect(Collectors.toList());
@@ -34,7 +33,8 @@ public class LocationService {
                 .map(Photo::getId)
                 .collect(Collectors.toList());
 
-        return new LocationResponse(location.getId(), location.getSequence(), location.getDate(), photoIds, imgUrls, location.getAddress().getFullAddress());
+        return new LocationResponse(location.getId(), location.getSequence(), location.getDate(),
+                photoIds, imgUrls, location.getAddress().getFullAddress(), location.getDescription());
     }
 
     public String updateDescription(Long locationId, @NotNull DescriptionRequest request) {

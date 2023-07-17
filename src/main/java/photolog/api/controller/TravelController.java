@@ -13,8 +13,6 @@ import photolog.api.dto.Travel.CalculateResponse;
 import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.service.TravelService;
 
-import java.util.List;
-
 @Tag(name = "travel", description = "여행기록 API")
 @RestController
 @RequestMapping("/api/travel")
