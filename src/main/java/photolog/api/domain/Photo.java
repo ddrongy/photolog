@@ -46,17 +46,27 @@ public class Photo {
         this.travel = travel;
         travel.getPhotos().add(this);
     }
+    public void setLocation (Location location) {
+        this.location = location;
+        location.getPhotos().add(this);
+    }
+
+    public void delTravel () {
+        this.travel.getPhotos().remove(this);
+        this.travel = null;
+    }
+    public void delLocation () {
+        this.location.getPhotos().remove(this);
+        this.location = null;
+    }
+
+
 
     public void changeLocation(Location newLocation) {
         if (this.location != null) {
             this.location.removePhoto(this);
         }
         this.location = newLocation;
-    }
-
-    public void setLocation (Location location) {
-        this.location = location;
-        location.getPhotos().add(this);
     }
 
     //== 생성 메서드 ==//

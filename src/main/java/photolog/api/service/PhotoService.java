@@ -24,7 +24,8 @@ public class PhotoService {
     
     public Long photoSave(Long travelId, String imgUrl, String stringDateTime, Coordinate coordinate, Address address){
         // travel 조회
-        Travel travel = travelRepository.findById(travelId).get();
+        Travel travel = travelRepository.findById(travelId)
+                .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(stringDateTime, formatter);
@@ -38,7 +39,8 @@ public class PhotoService {
 
     public List<LocationResponse> getOtherLocations(Long photoId){
         //photo 조회
-        Photo photo = photoRepository.findById(photoId).get();
+        Photo photo = photoRepository.findById(photoId)
+                .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));
 
         //photo 에 연결된 location 조회
         Location location = photo.getLocation();
@@ -55,9 +57,11 @@ public class PhotoService {
 
     public Long changeLocation(Long photoId, LocationIdRequest request){
         //photo 조회
-        Photo photo = photoRepository.findById(photoId).get();
+        Photo photo = photoRepository.findById(photoId)
+                .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));
 
-        Location newLocation = locationRepository.findById(request.getLocationId()).get();
+        Location newLocation = locationRepository.findById(request.getLocationId())
+                .orElseThrow(()-> new IllegalArgumentException("location 존재하지 않음"));
 
         photo.changeLocation(newLocation);
         newLocation.addPhoto(photo);
@@ -66,6 +70,15 @@ public class PhotoService {
 
 
         return newLocation.getId();
+    }
+
+    public void delete(Long photoId){
+        Photo photo = photoRepository.findById(photoId)
+                .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));
+        photo.delTravel();
+        photo.delLocation();
+
+        photoRepository.deleteById(photoId);
     }
 
 }
