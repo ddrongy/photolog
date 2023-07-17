@@ -5,14 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import photolog.api.dto.Location.DescriptionRequest;
 import photolog.api.dto.Location.LocationResponse;
 import photolog.api.dto.Location.NameRequest;
 import photolog.api.dto.ResponseDto;
-import photolog.api.dto.Travel.CalculateResultResponse;
-import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.service.LocationService;
 
 @Tag(name = "Location", description = "장소 API")
