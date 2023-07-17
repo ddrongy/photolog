@@ -37,7 +37,7 @@ class UserControllerTest {
     }
 
     @Test
-    void 회원이메일중복(){
+    void 회원이메일_중복(){
         //given
         Long savedId = userService.save(new AddUserRequest("test@naver.com", "test", "test1234"));
 
