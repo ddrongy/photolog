@@ -14,6 +14,7 @@ import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.repository.*;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -96,11 +97,10 @@ public class TravelService {
             }
         }
 
-        int totalDays = sequence.get() - 1;
+        int totalDays = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
         travel.updateDate(startDate, endDate, totalDays);
         travelRepository.save(travel);
 
-        entityManager.refresh(travel);
 
         return travel.getLocations().stream()
                 .map(Location::getId)
