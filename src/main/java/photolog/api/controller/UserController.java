@@ -58,6 +58,18 @@ public class UserController {
                 .body(response);
     }
 
+    @PostMapping("/resetPassword/{id}")
+    @Operation(summary = "유저 비밀번호 초기화")
+    public ResponseEntity<ResponseDto<Void>> resetPassword(@PathVariable Long id) {
+        userService.sendTemporaryPassword(id);
+        ResponseDto<Void> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("User reset password successful.");
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "유저 정보 조회")
     public ResponseEntity<ResponseDto<GetUserResponse>> getUser(@PathVariable Long id){
