@@ -28,7 +28,7 @@ public class Day {
     @Column(name = "day_date", nullable = false)
     private LocalDate date;
 
-    @OneToMany(mappedBy = "day")
+    @OneToMany(mappedBy = "day", cascade = CascadeType.REMOVE)
     private final List<Location> locations = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

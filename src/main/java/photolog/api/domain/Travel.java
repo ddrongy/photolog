@@ -29,16 +29,13 @@ public class Travel {
     @JoinColumn
     private User user;
 
-    @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "travel", cascade = CascadeType.REMOVE)
     private final List<Day> days = new ArrayList<>();
 
-    @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "travel")
     private final List<Location> locations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "travel")
     private final List<Photo> photos = new ArrayList<>();
 
     public Travel(User user) {
