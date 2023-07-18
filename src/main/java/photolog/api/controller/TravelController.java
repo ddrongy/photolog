@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import photolog.api.dto.ResponseDto;
 import photolog.api.dto.Travel.CalculateResponse;
 
+import photolog.api.dto.Travel.SummaryResponse;
 import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.service.TravelService;
 
@@ -57,8 +58,23 @@ public class TravelController {
 
         ResponseDto<String> response = new ResponseDto<>();
         response.setStatus(true);
-        response.setMessage("change travel title successful.");
+        response.setMessage("get travel summary successful.");
         response.setData(updateTitle);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+
+    @GetMapping("/{travelId}")
+    @Operation(summary = "travel summary 조회")
+    public ResponseEntity<ResponseDto<SummaryResponse>> summary(@PathVariable Long travelId) {
+        SummaryResponse summaryResponse = travelService.summary(travelId);
+
+        ResponseDto<SummaryResponse> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("get travel summary successful.");
+        response.setData(summaryResponse);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
