@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
 import photolog.api.dto.Travel.CalculateResponse;
+import photolog.api.dto.Travel.SummaryResponse;
 import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.repository.*;
 
@@ -72,8 +73,9 @@ public class TravelService {
                         return existingDay;
                     })
                     .orElseGet(() -> {
-                        Day newDay = Day.createDay(sequence.getAndIncrement(), currentDayDate, travel);
+                        Day newDay = Day.createDay(sequence.get(), currentDayDate, travel);
                         dayRepository.save(newDay);
+                        sequence.getAndIncrement();
                         return newDay;
                     });
 
@@ -84,7 +86,7 @@ public class TravelService {
                 Location location = locationRepository.findByCoordinateAndDateAndTravelId(locationEntry.getKey(), currentDayDate, travel.getId())
                         .orElseGet(() -> {
                             Address address = locationEntry.getValue().get(0).getAddress();
-                            Location newLocation = Location.createLocation(travel, locationEntry.getKey(), currentDayDate, day, address, sequence.get());
+                            Location newLocation = Location.createLocation(travel, locationEntry.getKey(), currentDayDate, day, address, day.getSequence());
                             locationRepository.save(newLocation);
                             return newLocation;
                         });
@@ -128,6 +130,12 @@ public class TravelService {
         travelRepository.save(travel);
 
         return travel.getTitle();
+    }
+
+    public SummaryResponse summary(Long travelId) {
+        Travel travel = travelRepository.findById(travelId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
+        return new SummaryResponse(travel);
     }
 
     @Transactional
