@@ -73,8 +73,9 @@ public class TravelService {
                         return existingDay;
                     })
                     .orElseGet(() -> {
-                        Day newDay = Day.createDay(sequence.getAndIncrement(), currentDayDate, travel);
+                        Day newDay = Day.createDay(sequence.get(), currentDayDate, travel);
                         dayRepository.save(newDay);
+                        sequence.getAndIncrement();
                         return newDay;
                     });
 
@@ -85,7 +86,7 @@ public class TravelService {
                 Location location = locationRepository.findByCoordinateAndDateAndTravelId(locationEntry.getKey(), currentDayDate, travel.getId())
                         .orElseGet(() -> {
                             Address address = locationEntry.getValue().get(0).getAddress();
-                            Location newLocation = Location.createLocation(travel, locationEntry.getKey(), currentDayDate, day, address, sequence.get());
+                            Location newLocation = Location.createLocation(travel, locationEntry.getKey(), currentDayDate, day, address, day.getSequence());
                             locationRepository.save(newLocation);
                             return newLocation;
                         });
