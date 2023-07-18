@@ -15,7 +15,7 @@ public class Travel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
-    private Long Id;
+    private Long id;
 
     private String title;
 
@@ -35,6 +35,13 @@ public class Travel {
 
     @OneToMany(mappedBy = "travel")
     private final List<Photo> photos = new ArrayList<>();
+
+    @OneToOne(mappedBy = "travel", cascade = CascadeType.REMOVE)
+    private Article article;
+
+    public void setArticle(Article article) {
+        this.article = article;
+    }
 
     public Travel(User user) {
         this.user = user;
