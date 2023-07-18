@@ -15,5 +15,6 @@ public class LocationResponse {
     private List<Long> photoIdList;
     private List<String> urlList;
     private String fullAddress;
+    private String name;
     private String description;
 }

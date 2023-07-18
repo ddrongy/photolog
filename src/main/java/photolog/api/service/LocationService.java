@@ -34,7 +34,7 @@ public class LocationService {
                 .collect(Collectors.toList());
 
         return new LocationResponse(location.getId(), location.getSequence(), location.getDate(),
-                photoIds, imgUrls, location.getAddress().getFullAddress(), location.getDescription());
+                photoIds, imgUrls, location.getAddress().getFullAddress(), location.getName(), location.getDescription());
     }
 
     public String updateDescription(Long locationId, @NotNull DescriptionRequest request) {
