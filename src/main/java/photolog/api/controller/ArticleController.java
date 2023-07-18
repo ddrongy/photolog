@@ -28,7 +28,7 @@ public class ArticleController {
         response.setMessage("save article successful.");
         response.setData(savedId);
 
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
 }
