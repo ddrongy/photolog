@@ -10,7 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
 import photolog.api.dto.Travel.CalculateResponse;
-import photolog.api.dto.Travel.SummaryResponse;
+import photolog.api.dto.Travel.SummaryMapResponse;
+import photolog.api.dto.Travel.SummaryTextResponse;
 import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.repository.*;
 
@@ -132,10 +133,16 @@ public class TravelService {
         return travel.getTitle();
     }
 
-    public SummaryResponse summary(Long travelId) {
+    public SummaryTextResponse textSummary(Long travelId) {
         Travel travel = travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
-        return new SummaryResponse(travel);
+        return new SummaryTextResponse(travel);
+    }
+
+    public SummaryMapResponse mapSummary(Long travelId) {
+        Travel travel = travelRepository.findById(travelId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
+        return new SummaryMapResponse(travel);
     }
 
     @Transactional

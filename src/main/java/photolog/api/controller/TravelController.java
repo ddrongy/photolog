@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import photolog.api.dto.ResponseDto;
 import photolog.api.dto.Travel.CalculateResponse;
 
-import photolog.api.dto.Travel.SummaryResponse;
+import photolog.api.dto.Travel.SummaryMapResponse;
+import photolog.api.dto.Travel.SummaryTextResponse;
 import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.service.TravelService;
 
@@ -66,15 +67,29 @@ public class TravelController {
     }
 
 
-    @GetMapping("/{travelId}")
+    @GetMapping("/textSummary/{travelId}")
     @Operation(summary = "travel summary 조회")
-    public ResponseEntity<ResponseDto<SummaryResponse>> summary(@PathVariable Long travelId) {
-        SummaryResponse summaryResponse = travelService.summary(travelId);
+    public ResponseEntity<ResponseDto<SummaryTextResponse>> textSummary(@PathVariable Long travelId) {
+        SummaryTextResponse summaryTextResponse = travelService.textSummary(travelId);
 
-        ResponseDto<SummaryResponse> response = new ResponseDto<>();
+        ResponseDto<SummaryTextResponse> response = new ResponseDto<>();
         response.setStatus(true);
-        response.setMessage("get travel summary successful.");
-        response.setData(summaryResponse);
+        response.setMessage("get travel text summary successful.");
+        response.setData(summaryTextResponse);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping("/mapSummary/{travelId}")
+    @Operation(summary = "travel summary 조회")
+    public ResponseEntity<ResponseDto<SummaryMapResponse>> mapSummary(@PathVariable Long travelId) {
+        SummaryMapResponse summaryMapResponse = travelService.mapSummary(travelId);
+
+        ResponseDto<SummaryMapResponse> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("get travel map summary successful.");
+        response.setData(summaryMapResponse);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);

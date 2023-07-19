@@ -2,10 +2,7 @@ package photolog.api.dto.Travel;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import photolog.api.domain.Day;
-import photolog.api.domain.Location;
-import photolog.api.domain.Photo;
-import photolog.api.domain.Travel;
+import photolog.api.domain.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
-public class SummaryResponse {
+public class SummaryMapResponse {
 
     private Long id;
     private String title;
@@ -22,7 +19,7 @@ public class SummaryResponse {
     private Integer totalDate;
     private List<DayDTO> days;
 
-    public SummaryResponse(Travel travel) {
+    public SummaryMapResponse(Travel travel) {
         this.id = travel.getId();
         this.title = travel.getTitle();
         this.startDate = travel.getStartDate();
@@ -59,19 +56,16 @@ public class SummaryResponse {
         private Long id;
         private String name;
         private String description;
-        private LocalDate date;
-        private Integer sequence;
-        private List<String> photoUrls;  // Photo URL 리스트 추가
+        private String photoUrl;
+        private Coordinate coordinate;
 
         public LocationDTO(Location location) {
             this.id = location.getId();
             this.name = location.getName();
             this.description = location.getDescription();
-            this.date = location.getDate();
-            this.sequence = location.getSequence();
-            this.photoUrls = location.getPhotos().stream()
-                    .map(Photo::getImgUrl)  // Photo 객체에서 URL 가져오기
-                    .collect(Collectors.toList());
+            this.photoUrl = location.getPhotos().isEmpty() ? null :
+                    location.getPhotos().get(0).getImgUrl();
+            this.coordinate = location.getCoordinate();
         }
     }
 }
