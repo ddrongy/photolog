@@ -1,5 +1,6 @@
 package photolog.api.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
@@ -21,7 +22,8 @@ public class PhotoService {
     private final PhotoRepository photoRepository;
     private final LocationRepository locationRepository;
     private final TravelRepository travelRepository;
-    
+
+    @Transactional
     public Long photoSave(Long travelId, String imgUrl, String stringDateTime, Coordinate coordinate, Address address){
         // travel 조회
         Travel travel = travelRepository.findById(travelId)
@@ -36,7 +38,7 @@ public class PhotoService {
 
         return photo.getId();
     }
-
+    @Transactional
     public List<LocationResponse> getOtherLocations(Long photoId){
         //photo 조회
         Photo photo = photoRepository.findById(photoId)
@@ -45,16 +47,16 @@ public class PhotoService {
         //photo 에 연결된 location 조회
         Location location = photo.getLocation();
 
-        List<Location> locations = locationRepository.findAll();
+        // 해당 photo와 같은 travelId를 가지는 location 조회
+        List<Location> locations = locationRepository.findAllByTravelId(location.getTravel().getId());
         locations.remove(location);
 
         // Location 리스트를 LocationResponse 리스트로 변환
         return locations.stream()
                 .map(loc -> new LocationResponse(loc.getId(), loc.getSequence(), loc.getAddress().getFullAddress(), loc.getName()))
                 .collect(Collectors.toList());
-
     }
-
+    @Transactional
     public Long changeLocation(Long photoId, LocationIdRequest request){
         //photo 조회
         Photo photo = photoRepository.findById(photoId)
@@ -71,7 +73,7 @@ public class PhotoService {
 
         return newLocation.getId();
     }
-
+    @Transactional
     public void delete(Long photoId){
         Photo photo = photoRepository.findById(photoId)
                 .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));

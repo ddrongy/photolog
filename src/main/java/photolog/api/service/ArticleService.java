@@ -13,7 +13,6 @@ import photolog.api.domain.User;
 import photolog.api.dto.Article.ArticleResponse;
 import photolog.api.dto.Article.LocationContentRequest;
 import photolog.api.dto.Article.TitleRequest;
-import photolog.api.dto.User.UserArticleResponse;
 import photolog.api.repository.ArticleRepository;
 import photolog.api.repository.LocationRepository;
 import photolog.api.repository.TravelRepository;
@@ -52,7 +51,7 @@ public class ArticleService {
                     .user(user)
                     .build();
             articleRepository.save(article);
-            return new ArticleResponse(travel);
+            return new ArticleResponse(article.getId(), travel);
         } else {
             // handle case when travelId does not exist in the database
             throw new IllegalArgumentException("Travel not found with id: " + travelId);
@@ -76,13 +75,13 @@ public class ArticleService {
         article.updateTitle(request.getTitle());
         articleRepository.save(article);
     }
-
+    @Transactional
     public ArticleResponse getArticleById(Long articleId){
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
         Travel travel = article.getTravel();
-        return new ArticleResponse(travel);
+        return new ArticleResponse(article.getId(), travel);
     }
 
     @Transactional
