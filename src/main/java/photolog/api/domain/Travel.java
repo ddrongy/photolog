@@ -11,11 +11,12 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor
+@Table(name = "travels")
 public class Travel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
-    private Long Id;
+    private Long id;
 
     private String title;
 
@@ -36,8 +37,12 @@ public class Travel {
     @OneToMany(mappedBy = "travel")
     private final List<Photo> photos = new ArrayList<>();
 
+    @OneToOne(mappedBy = "travel", cascade = CascadeType.REMOVE)
+    private Article article;
+
     public Travel(User user) {
         this.user = user;
+        user.getTravels().add(this);
     }
 
     public void updateDate(LocalDate startDate, LocalDate endDate, Integer totalDate){
@@ -50,4 +55,7 @@ public class Travel {
         this.title = title;
     }
 
+    public void setArticle(Article article) {
+        this.article = article;
+    }
 }

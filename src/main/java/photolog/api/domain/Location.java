@@ -14,6 +14,7 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "locations")
 public class Location {
 
     @Id
@@ -23,7 +24,8 @@ public class Location {
 
     private String name;
 
-    private String description;
+    private String description; // 개인적인 설명
+    private String content; //  게시글 내용
 
     @Embedded
     private Coordinate coordinate;
@@ -46,7 +48,7 @@ public class Location {
     private Day day;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "travel_id", nullable = false)
+    @JoinColumn(name = "travel_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Travel travel;
 
@@ -102,5 +104,9 @@ public class Location {
     }
     private void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public void updateContent(String newContent){
+        this.content = newContent;
     }
 }

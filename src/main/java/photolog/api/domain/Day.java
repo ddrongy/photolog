@@ -32,7 +32,7 @@ public class Day {
     private final List<Location> locations = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "travel_id", nullable = false)
+    @JoinColumn(name = "travel_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Travel travel;
 

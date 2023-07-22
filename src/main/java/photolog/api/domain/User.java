@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,6 +29,16 @@ public class User implements UserDetails {
 
     @Column(name = "password")
     private String password;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Travel> travels = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Article> articles = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private List<Bookmark> bookmarks = new ArrayList<>();
+
 
     @Builder
     public User(String email, String password, String nickName, String auth) {

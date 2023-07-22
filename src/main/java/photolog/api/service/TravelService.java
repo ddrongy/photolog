@@ -35,6 +35,11 @@ public class TravelService {
     @PersistenceContext
     private EntityManager entityManager;
 
+
+    public Travel getTravelById(Long travelId) {
+        return travelRepository.findById(travelId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
+    }
     // 기본 travel 생성
     public Long createTravel() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

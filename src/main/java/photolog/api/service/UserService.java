@@ -8,13 +8,16 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import photolog.api.domain.Article;
 import photolog.api.domain.User;
 import photolog.api.dto.User.*;
 import photolog.api.repository.UserRepository;
 import photolog.api.utils.JwtUtil;
 
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -70,7 +73,7 @@ public class UserService {
 
     public NicknameResponse changeNickname(Long userId, String newNickname) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new IllegalArgumentException("email 존재하지 않음"));
+                .orElseThrow(()-> new IllegalArgumentException("id 존재하지 않음"));
 
         user.changeNickname(newNickname);
 
