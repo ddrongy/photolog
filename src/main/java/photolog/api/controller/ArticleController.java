@@ -21,6 +21,7 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @PostMapping("/{travelId}")
+    @Operation(summary = "게시글 작성")
     public ResponseEntity<ResponseDto<ArticleResponse>> addArticle(@PathVariable Long travelId) {
         ArticleResponse addArticleResponse = articleService.save(travelId);
 
@@ -41,9 +42,50 @@ public class ArticleController {
 
         ResponseDto<Void> response = new ResponseDto<>();
         response.setStatus(true);
-        response.setMessage("get travel summary successful.");
+        response.setMessage("update article title successful.");
 
         return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PostMapping("/report/{articleId}")
+    @Operation(summary = "게시글 신고")
+    public ResponseEntity<ResponseDto<Void>> report(@PathVariable Long articleId) {
+        articleService.report(articleId);
+
+        ResponseDto<Void> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("add report successful.");
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PostMapping("/addLike/{articleId}")
+    @Operation(summary = "게시글 like")
+    public ResponseEntity<ResponseDto<Integer>> addLike(@PathVariable Long articleId) {
+        Integer likes = articleService.addLike(articleId);
+
+        ResponseDto<Integer> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("add Like successful.");
+        response.setData(likes);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PostMapping("/cancelLike/{articleId}")
+    @Operation(summary = "게시글 like 취소")
+    public ResponseEntity<ResponseDto<Integer>> cancelLike(@PathVariable Long articleId) {
+        Integer likes = articleService.cancelLike(articleId);
+
+        ResponseDto<Integer> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("cancel Like successful.");
+        response.setData(likes);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
 
@@ -55,14 +97,14 @@ public class ArticleController {
 
         ResponseDto<Void> response = new ResponseDto<>();
         response.setStatus(true);
-        response.setMessage("get travel summary successful.");
+        response.setMessage("update article content successful.");
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
 
     @GetMapping("/{articleId}")
-    @Operation(summary = "게시글 상세 조")
+    @Operation(summary = "게시글 상세 조회")
     public ResponseEntity<ResponseDto<ArticleResponse>> getArticle(@PathVariable Long articleId){
         ArticleResponse articleResponse = articleService.getArticleById(articleId);
 

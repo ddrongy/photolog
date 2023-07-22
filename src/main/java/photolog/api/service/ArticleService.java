@@ -93,10 +93,39 @@ public class ArticleService {
         Travel travel = article.getTravel();
 
         user.getArticles().remove(article);
+        userRepository.save(user);  // Save user's changes
+
         travel.setArticle(null);
+        travelRepository.save(travel);  // Save travel's changes
 
         articleRepository.delete(article);
     }
 
+    public Integer addLike(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
+
+        article.addLike();
+        articleRepository.save(article);
+        return article.getLikes();
+    }
+
+
+    public Integer cancelLike(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
+
+        article.cancelLike();
+        articleRepository.save(article);
+        return article.getLikes();
+    }
+
+    public void report(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
+
+        article.addReport();
+        articleRepository.save(article);
+    }
 
 }
