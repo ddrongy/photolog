@@ -6,8 +6,10 @@ import photolog.api.domain.Coordinate;
 import photolog.api.domain.Location;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
     Optional<Location> findByCoordinateAndDateAndTravelId(Coordinate coordinate, LocalDate date, Long travelId);
+    List<Location> findAllByTravelId(Long travelId);
 }

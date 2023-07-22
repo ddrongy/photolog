@@ -15,14 +15,16 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ArticleResponse {
     private Long id;
+    private Long travel_id;
     private String title;
 //    private LocalDate startDate;
 //    private LocalDate endDate;
 //    private Integer totalDate;
     private List<SummaryMapResponse.DayDTO> days;
 
-    public ArticleResponse(Travel travel) {
-        this.id = travel.getId();
+    public ArticleResponse(Long id, Travel travel) {
+        this.id = id;
+        this.travel_id = travel.getId();
         this.title = travel.getTitle();
 //        this.startDate = travel.getStartDate();
 //        this.endDate = travel.getEndDate();
@@ -58,18 +60,17 @@ public class ArticleResponse {
         private Long id;
         private String name;
         private String content;
-        private String photoUrl;
+        private List<String> photoUrls;
         private Coordinate coordinate;
 
         public LocationDTO(Location location) {
             this.id = location.getId();
             this.name = location.getName();
-            this.content = location.getContent();  // Add this line
-            this.photoUrl = location.getPhotos().stream()
+            this.content = location.getContent();
+            this.photoUrls = location.getPhotos().stream()
                     .filter(photo -> photo.getArticle() == true)
-                    .findFirst()
                     .map(Photo::getImgUrl)
-                    .orElse(null);
+                    .collect(Collectors.toList());
             this.coordinate = location.getCoordinate();
         }
     }

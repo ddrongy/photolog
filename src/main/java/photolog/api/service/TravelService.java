@@ -41,6 +41,7 @@ public class TravelService {
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
     }
     // 기본 travel 생성
+    @Transactional
     public Long createTravel() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = (String)authentication.getPrincipal();
@@ -88,21 +89,24 @@ public class TravelService {
             Map<Coordinate, List<Photo>> photosByLocation = dateEntry.getValue().stream()
                     .collect(Collectors.groupingBy(Photo::getCoordinate));
 
-            for (Map.Entry<Coordinate, List<Photo>> locationEntry : photosByLocation.entrySet()) {
-                Location location = locationRepository.findByCoordinateAndDateAndTravelId(locationEntry.getKey(), currentDayDate, travel.getId())
-                        .orElseGet(() -> {
-                            Address address = locationEntry.getValue().get(0).getAddress();
-                            Location newLocation = Location.createLocation(travel, locationEntry.getKey(), currentDayDate, day, address, day.getSequence());
-                            locationRepository.save(newLocation);
-                            return newLocation;
-                        });
+            photosByLocation.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.comparing(photosList -> photosList.get(0).getDateTime())))
+                    .forEach(locationEntry -> {
+                        Location location = locationRepository.findByCoordinateAndDateAndTravelId(locationEntry.getKey(), currentDayDate, travel.getId())
+                                .orElseGet(() -> {
+                                    Address address = locationEntry.getValue().get(0).getAddress();
+                                    Location newLocation = Location.createLocation(travel, locationEntry.getKey(), currentDayDate, day, address, day.getSequence());
+                                    locationRepository.save(newLocation);
+                                    return newLocation;
+                                });
 
-                List<Photo> photosInSameLocation = locationEntry.getValue();
-                for (Photo photo : photosInSameLocation) {
-                    photo.setLocation(location);
-                    photoRepository.save(photo);
-                }
-            }
+                        List<Photo> photosInSameLocation = locationEntry.getValue();
+                        for (Photo photo : photosInSameLocation) {
+                            photo.setLocation(location);
+                            photoRepository.save(photo);
+                        }
+                    });
+
         }
 
         int totalDays = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
@@ -128,6 +132,7 @@ public class TravelService {
     }
 
 
+    @Transactional
     public String updateTitle(Long travelId, TitleRequest request) {
         Travel travel = travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
@@ -138,12 +143,14 @@ public class TravelService {
         return travel.getTitle();
     }
 
+    @Transactional
     public SummaryTextResponse textSummary(Long travelId) {
         Travel travel = travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
         return new SummaryTextResponse(travel);
     }
 
+    @Transactional
     public SummaryMapResponse mapSummary(Long travelId) {
         Travel travel = travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
