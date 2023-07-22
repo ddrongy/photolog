@@ -20,7 +20,7 @@ public class ArticleResponse {
 //    private LocalDate startDate;
 //    private LocalDate endDate;
 //    private Integer totalDate;
-    private List<SummaryMapResponse.DayDTO> days;
+    private List<DayDTO> days;
 
     public ArticleResponse(Long id, Travel travel) {
         this.id = id;
@@ -30,7 +30,7 @@ public class ArticleResponse {
 //        this.endDate = travel.getEndDate();
 //        this.totalDate = travel.getTotalDate();
         this.days = travel.getDays().stream()
-                .map(SummaryMapResponse.DayDTO::new)
+                .map(DayDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -41,14 +41,14 @@ public class ArticleResponse {
         private Long id;
         private Integer sequence;
         private LocalDate date;
-        private List<SummaryMapResponse.LocationDTO> locations;
+        private List<LocationDTO> locations;
 
         public DayDTO(Day day) {
             this.id = day.getId();
             this.sequence = day.getSequence();
             this.date = day.getDate();
             this.locations = day.getLocations().stream()
-                    .map(SummaryMapResponse.LocationDTO::new)
+                    .map(LocationDTO::new)
                     .collect(Collectors.toList());
         }
     }

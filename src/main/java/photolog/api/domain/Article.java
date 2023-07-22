@@ -51,6 +51,18 @@ public class Article {
         this.bookmarks++;
     }
 
+    public void addLike(){
+        this.likes++;
+    }
+    public void cancelLike(){
+        this.likes--;
+    }
+
+    public void addReport(){
+        this.reports++;
+        if(this.reports >=5)  this.hide=true;
+    }
+
     public void updateTitle(String title) {
         this.title = title;
     }
