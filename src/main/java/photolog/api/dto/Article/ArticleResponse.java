@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddArticleResponse {
+public class ArticleResponse {
     private Long id;
     private String title;
 //    private LocalDate startDate;
@@ -21,7 +21,7 @@ public class AddArticleResponse {
 //    private Integer totalDate;
     private List<SummaryMapResponse.DayDTO> days;
 
-    public AddArticleResponse(Travel travel) {
+    public ArticleResponse(Travel travel) {
         this.id = travel.getId();
         this.title = travel.getTitle();
 //        this.startDate = travel.getStartDate();

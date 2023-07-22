@@ -50,4 +50,9 @@ public class Article {
     public void addBookmark(){
         this.bookmarks++;
     }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
 }
