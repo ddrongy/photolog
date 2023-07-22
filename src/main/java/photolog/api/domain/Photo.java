@@ -31,8 +31,10 @@ public class Photo {
     @Embedded
     private Address address;
 
+    private Boolean article;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "travel_id", nullable = false)
+    @JoinColumn(name = "travel_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Travel travel;
 
@@ -77,6 +79,7 @@ public class Photo {
         photo.setDateTime(dateTime);
         photo.setCoordinate(coordinate);
         photo.setAddress(address);
+        photo.setArticle();
 
         return photo;
     }
@@ -96,4 +99,9 @@ public class Photo {
     private void setImgUrl (String imgUrl) {
         this.imgUrl = imgUrl;
     }
+
+    private void setArticle () {
+        this.article = true;
+    }
+
 }

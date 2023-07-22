@@ -39,12 +39,9 @@ public class Travel {
     @OneToOne(mappedBy = "travel", cascade = CascadeType.REMOVE)
     private Article article;
 
-    public void setArticle(Article article) {
-        this.article = article;
-    }
-
     public Travel(User user) {
         this.user = user;
+        user.getTravels().add(this);
     }
 
     public void updateDate(LocalDate startDate, LocalDate endDate, Integer totalDate){
@@ -57,4 +54,7 @@ public class Travel {
         this.title = title;
     }
 
+    public void setArticle(Article article) {
+        this.article = article;
+    }
 }

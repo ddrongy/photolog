@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Getter
 @Entity
-@Table(name = "article")
+@Table(name = "articles")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Article {
 
@@ -15,25 +15,39 @@ public class Article {
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content")
     private String content;
 
     @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "travel_id")
+    @JoinColumn(name = "travel_id", nullable = true)
     private Travel travel;
 
-    private void setTravel(@NotNull Travel travel) {
-        travel.setArticle(this);
-    }
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
+
+    private Integer likes;
+    private Integer reports;
+    private Boolean hide;
+    private Integer bookmarks;
+
 
     @Builder
-    public Article(String title, String content, Travel travel) {
-        this.title = title;
-        this.content = content;
+    public Article(Travel travel, User user) {
         this.travel = travel;
-        setTravel(travel);
+        travel.setArticle(this);
+        this.user = user;
+        user.getArticles().add(this);
+        this.likes = 0;
+        this.reports = 0;
+        this.bookmarks = 0;
+        this.hide = false;
+    }
+
+    public void addBookmark(){
+        this.bookmarks++;
     }
 }

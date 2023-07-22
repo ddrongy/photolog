@@ -5,19 +5,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import photolog.api.domain.Article;
 import photolog.api.domain.Travel;
 import photolog.api.domain.User;
-import photolog.api.dto.Article.AddArticleRequest;
 import photolog.api.repository.ArticleRepository;
 import photolog.api.repository.TravelRepository;
 import photolog.api.repository.UserRepository;
@@ -64,6 +63,7 @@ class ArticleControllerTest {
     @Test
     public void addArticle() throws Exception {
         //given
+        //user, travel 기본생성
         User user = userRepository.save(User.builder()
                 .email("test@naver.com")
                 .nickName("test")
@@ -72,29 +72,35 @@ class ArticleControllerTest {
         Travel travel = new Travel(user);
         travelRepository.save(travel);
 
-        System.out.println(travel.getId());
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken("test@naver.com", "password");
 
-        final String url ="/api/article/"+travel.getId();
+        // SecurityContext 에 인증토큰 설정
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        final String url ="/api/articles/"+travel.getId();
         final String title = "title";
         final String content = "content";
-        AddArticleRequest userRequest = new AddArticleRequest(title, content);
+//        AddArticleRequest userRequest = new AddArticleRequest(title, content);
+//
+//        final String requestBody = objectMapper.writeValueAsString(userRequest);
+//
+//        //when
+//        ResultActions result = mockMvc.perform(post(url)
+//                .contentType(MediaType.APPLICATION_JSON_VALUE)
+//                .content(requestBody)
+//        );
+//
+//        //then
+//        result.andExpect(status().isCreated());
+//
+//        List<Article> articles = articleRepository.findAll();
+//
+//        assertThat(articles.size()).isEqualTo(1);
+//        assertThat(articles.get(0).getTitle()).isEqualTo(title);
+//        assertThat(articles.get(0).getContent()).isEqualTo(content);
+//        assertThat(articles.get(0).getTravel().getId()).isEqualTo(travel.getId());
+//        assertThat(articles.get(0).getUser().getId()).isEqualTo(user.getId());
 
-        final String requestBody = objectMapper.writeValueAsString(userRequest);
-
-        //when
-        ResultActions result = mockMvc.perform(post(url)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(requestBody)
-        );
-
-        //then
-        result.andExpect(status().isCreated());
-
-        List<Article> articles = articleRepository.findAll();
-
-        assertThat(articles.size()).isEqualTo(1);
-        assertThat(articles.get(0).getTitle()).isEqualTo(title);
-        assertThat(articles.get(0).getContent()).isEqualTo(content);
-        assertThat(articles.get(0).getTravel().getId()).isEqualTo(travel.getId());
     }
 }

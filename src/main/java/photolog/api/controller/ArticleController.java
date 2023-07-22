@@ -5,28 +5,42 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import photolog.api.domain.Article;
-import photolog.api.dto.Article.AddArticleRequest;
-import photolog.api.dto.Location.LocationResponse;
+import photolog.api.dto.Article.AddArticleResponse;
 import photolog.api.dto.ResponseDto;
+import photolog.api.dto.User.ArticleResponse;
 import photolog.api.service.ArticleService;
 
-@Tag(name = "article", description = "게시 API")
+import java.util.List;
+
+@Tag(name = "articles", description = "게시 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/article")
+@RequestMapping("/api/articles")
 public class ArticleController {
 
     private final ArticleService articleService;
 
     @PostMapping("/{travelId}")
-    public ResponseEntity<ResponseDto<Long>> addArticle(@PathVariable Long travelId, @RequestBody AddArticleRequest request) {
-        Long savedId = articleService.save(travelId, request);
+    public ResponseEntity<ResponseDto<AddArticleResponse>> addArticle(@PathVariable Long travelId) {
+        AddArticleResponse addArticleResponse = articleService.save(travelId);
 
-        ResponseDto<Long> response = new ResponseDto<>();
+        ResponseDto<AddArticleResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("save article successful.");
-        response.setData(savedId);
+        response.setData(addArticleResponse);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<ResponseDto<List<ArticleResponse>>> getArticle(@PathVariable Long userId){
+        List<ArticleResponse> userArticle = articleService.getUserArticle(userId);
+
+        ResponseDto<List<ArticleResponse>> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("get article successful.");
+        response.setData(userArticle);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
