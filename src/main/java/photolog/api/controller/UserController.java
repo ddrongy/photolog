@@ -31,7 +31,7 @@ public class UserController {
                 .body(response);
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     @Operation(summary = "유저 로그인")
     public ResponseEntity<ResponseDto<LoginUserResponse>> login(@RequestBody LoginUserRequest request) {
         LoginUserResponse loginResponse = userService.login(request);
