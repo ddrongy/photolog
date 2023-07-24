@@ -8,12 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import photolog.api.dto.ResponseDto;
-import photolog.api.dto.Travel.CalculateResponse;
+import photolog.api.dto.Travel.*;
 
-import photolog.api.dto.Travel.SummaryMapResponse;
-import photolog.api.dto.Travel.SummaryTextResponse;
-import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.service.TravelService;
+
+import java.util.List;
 
 @Tag(name = "travel", description = "여행기록 API")
 @RestController
@@ -90,6 +89,20 @@ public class TravelController {
         response.setStatus(true);
         response.setMessage("get travel map summary successful.");
         response.setData(summaryMapResponse);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping("")
+    @Operation(summary = "내 travel log  조회")
+    public ResponseEntity<ResponseDto<List<MyLogResponse>>> getMyLog() {
+        List<MyLogResponse> myLog = travelService.getMyLog();
+
+        ResponseDto<List<MyLogResponse>> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("get my travel log successful.");
+        response.setData(myLog);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);

@@ -6,11 +6,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import photolog.api.domain.Article;
-import photolog.api.domain.Location;
-import photolog.api.domain.Travel;
-import photolog.api.domain.User;
+import photolog.api.domain.*;
 import photolog.api.dto.Article.*;
+import photolog.api.dto.Travel.MyLogResponse;
 import photolog.api.repository.ArticleRepository;
 import photolog.api.repository.LocationRepository;
 import photolog.api.repository.TravelRepository;
@@ -18,6 +16,7 @@ import photolog.api.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -134,6 +133,34 @@ public class ArticleService {
 
         article.addReport();
         articleRepository.save(article);
+    }
+
+    @Transactional
+    public List<MyArticleResponse> getMyArticle() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + userEmail));
+
+        List<Article> articles = articleRepository.findByUser(user);
+
+        return articles.stream().map(article -> {
+            Travel travel = article.getTravel();
+
+            Location firstLocation = travel.getLocations().get(0);
+            Photo firstPhoto = firstLocation.getPhotos().get(0);
+
+            return new MyArticleResponse(
+                    firstLocation.getAddress().getCity(),
+                    article.getTitle(),
+                    travel.getStartDate(),
+                    travel.getEndDate(),
+                    firstPhoto.getImgUrl(),
+                    travel.getPhotos().size(),
+                    article.getLikes()
+            );
+        }).collect(Collectors.toList());
     }
 
 }

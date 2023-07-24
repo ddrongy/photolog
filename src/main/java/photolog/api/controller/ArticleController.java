@@ -8,7 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import photolog.api.dto.Article.*;
 import photolog.api.dto.ResponseDto;
+import photolog.api.dto.Travel.MyLogResponse;
 import photolog.api.service.ArticleService;
+
+import java.util.List;
 
 @Tag(name = "articles", description = "게시글 API")
 @RequiredArgsConstructor
@@ -99,6 +102,19 @@ public class ArticleController {
         response.setData(articleResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+    @GetMapping("")
+    @Operation(summary = "내 article log  조회")
+    public ResponseEntity<ResponseDto<List<MyArticleResponse>>> getMyArticle() {
+        List<MyArticleResponse> myLog = articleService.getMyArticle();
+
+        ResponseDto<List<MyArticleResponse>> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("get my article list successful.");
+        response.setData(myLog);
+
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
 
