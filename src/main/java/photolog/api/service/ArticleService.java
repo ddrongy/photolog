@@ -10,14 +10,13 @@ import photolog.api.domain.Article;
 import photolog.api.domain.Location;
 import photolog.api.domain.Travel;
 import photolog.api.domain.User;
-import photolog.api.dto.Article.ArticleResponse;
-import photolog.api.dto.Article.LocationContentRequest;
-import photolog.api.dto.Article.TitleRequest;
+import photolog.api.dto.Article.*;
 import photolog.api.repository.ArticleRepository;
 import photolog.api.repository.LocationRepository;
 import photolog.api.repository.TravelRepository;
 import photolog.api.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -51,7 +50,7 @@ public class ArticleService {
                     .user(user)
                     .build();
             articleRepository.save(article);
-            return new ArticleResponse(article.getId(), travel);
+            return new ArticleResponse(article, travel);
         } else {
             // handle case when travelId does not exist in the database
             throw new IllegalArgumentException("Travel not found with id: " + travelId);
@@ -59,29 +58,38 @@ public class ArticleService {
     }
 
     @Transactional
-    public void updateContent(Long locationId, LocationContentRequest request){
-        Location location = locationRepository.findById(locationId)
-                .orElseThrow(() -> new IllegalArgumentException("location 존재하지 않음"));
-
-        location.updateContent(request.getContent());
-        locationRepository.save(location);
-    }
-
-    @Transactional
-    public void updateTitle(Long articleId, TitleRequest request) {
+    public ArticleResponse updateArticle(Long articleId, ArticleUpdateRequest request) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
-        article.updateTitle(request.getTitle());
+        article.updateTitleAndContent(request.getTitle(), request.getContent());
+
+        Travel travel = article.getTravel();
+        List<Location> locations = travel.getLocations();
+
+        if (locations.size() != request.getLocationContent().size()) {
+            throw new IllegalArgumentException("The size of the locations and locationContent lists must be the same.");
+        }
+
+        for (int i = 0; i < locations.size(); i++) {
+            locations.get(i).updateContent(request.getLocationContent().get(i));
+        }
+
+        article.setBudget(request.getBudget());
+
         articleRepository.save(article);
+        travelRepository.save(travel);
+
+        return new ArticleResponse(article, travel);
     }
+
     @Transactional
     public ArticleResponse getArticleById(Long articleId){
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
         Travel travel = article.getTravel();
-        return new ArticleResponse(article.getId(), travel);
+        return new ArticleResponse(article, travel);
     }
 
     @Transactional
