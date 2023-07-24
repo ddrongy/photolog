@@ -6,9 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import photolog.api.dto.Article.ArticleResponse;
-import photolog.api.dto.Article.LocationContentRequest;
-import photolog.api.dto.Article.TitleRequest;
+import photolog.api.dto.Article.*;
 import photolog.api.dto.ResponseDto;
 import photolog.api.service.ArticleService;
 
@@ -34,15 +32,16 @@ public class ArticleController {
                 .body(response);
     }
 
-    @PatchMapping("/title/{ArticleId}")
-    @Operation(summary = "게시글 title 변경")
-    public ResponseEntity<ResponseDto<Void>> changeTitle(@PathVariable Long ArticleId,
-                                                           @RequestBody TitleRequest request){
-        articleService.updateTitle(ArticleId, request);
+    @PatchMapping("/{ArticleId}")
+    @Operation(summary = "게시글 수정")
+    public ResponseEntity<ResponseDto<ArticleResponse>> changeTitle(@PathVariable Long ArticleId,
+                                                           @RequestBody ArticleUpdateRequest request){
+        ArticleResponse articleResponse = articleService.updateArticle(ArticleId, request);
 
-        ResponseDto<Void> response = new ResponseDto<>();
+        ResponseDto<ArticleResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("update article title successful.");
+        response.setData(articleResponse);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
@@ -86,20 +85,6 @@ public class ArticleController {
         response.setData(likes);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(response);
-    }
-
-    @PatchMapping("/location/{locationId}")
-    @Operation(summary = "게시글 내 Location content 변경")
-    public ResponseEntity<ResponseDto<Void>> changeTitle(@PathVariable Long locationId,
-                                                         @RequestBody LocationContentRequest request){
-        articleService.updateContent(locationId, request);
-
-        ResponseDto<Void> response = new ResponseDto<>();
-        response.setStatus(true);
-        response.setMessage("update article content successful.");
-
-        return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
 

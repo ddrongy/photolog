@@ -21,17 +21,19 @@ public class ArticleResponse {
 //    private LocalDate endDate;
 //    private Integer totalDate;
     private List<DayDTO> days;
+    private Integer budget;
 
-    public ArticleResponse(Long id, Travel travel) {
-        this.id = id;
+    public ArticleResponse(Article article, Travel travel) {
+        this.id = article.getId();
         this.travel_id = travel.getId();
-        this.title = travel.getTitle();
+        this.title = article.getTitle();
 //        this.startDate = travel.getStartDate();
 //        this.endDate = travel.getEndDate();
 //        this.totalDate = travel.getTotalDate();
         this.days = travel.getDays().stream()
                 .map(DayDTO::new)
                 .collect(Collectors.toList());
+        this.budget = article.getBudget();
     }
 
     @Getter

@@ -31,7 +31,7 @@ public class UserController {
                 .body(response);
     }
 
-    @PostMapping("/login")
+    @GetMapping("/login")
     @Operation(summary = "유저 로그인")
     public ResponseEntity<ResponseDto<LoginUserResponse>> login(@RequestBody LoginUserRequest request) {
         LoginUserResponse loginResponse = userService.login(request);
@@ -44,7 +44,7 @@ public class UserController {
                 .body(response);
     }
 
-    @PostMapping("/nickName/{id}")
+    @PatchMapping("/nickName/{id}")
     @Operation(summary = "유저 닉네임 변경")
     public ResponseEntity<ResponseDto<NicknameResponse>> changeNickname(@PathVariable Long id,
                                                                         @RequestBody NicknameRequest request) {
@@ -58,10 +58,22 @@ public class UserController {
                 .body(response);
     }
 
-    @PostMapping("/resetPassword/{id}")
+//    @PostMapping("/resetPassword/{id}")
+//    @Operation(summary = "유저 비밀번호 초기화")
+//    public ResponseEntity<ResponseDto<Void>> resetPassword(@PathVariable Long id) {
+//        userService.sendTemporaryPassword(id);
+//        ResponseDto<Void> response = new ResponseDto<>();
+//        response.setStatus(true);
+//        response.setMessage("User reset password successful.");
+//
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .body(response);
+//    }
+
+    @GetMapping("/resetPassword")
     @Operation(summary = "유저 비밀번호 초기화")
-    public ResponseEntity<ResponseDto<Void>> resetPassword(@PathVariable Long id) {
-        userService.sendTemporaryPassword(id);
+    public ResponseEntity<ResponseDto<Void>> resetPassword(PasswordRequest request) {
+        userService.sendTemporaryPassword(request.getPassword());
         ResponseDto<Void> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("User reset password successful.");
@@ -82,7 +94,6 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
-
     }
 
     @DeleteMapping ("/delete/{id}")

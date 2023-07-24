@@ -82,9 +82,9 @@ public class UserService {
         return new NicknameResponse(user.getNickName());
     }
 
-    public void sendTemporaryPassword(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id를 가진 사용자가 존재하지 않습니다."));
+    public void sendTemporaryPassword(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 email를 가진 사용자가 존재하지 않습니다."));
 
         String tempPassword = generateTemporaryPassword(10);
         user.changePassword(passwordEncoder.encode(tempPassword));

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 @Getter
 @Entity
 @Table(name = "articles")
@@ -33,6 +35,7 @@ public class Article {
     private Integer reports;
     private Boolean hide;
     private Integer bookmarks;
+    private Integer budget;  //20, 40, 60, 80, 100
 
 
     @Builder
@@ -63,8 +66,11 @@ public class Article {
         if(this.reports >=5)  this.hide=true;
     }
 
-    public void updateTitle(String title) {
+    public void updateTitleAndContent(String title, String content) {
         this.title = title;
+        this.content = content;
     }
+
+    public void setBudget(Integer budget) {this.budget = budget;}
 
 }
