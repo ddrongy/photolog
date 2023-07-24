@@ -40,6 +40,7 @@ public class TravelService {
         return travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
     }
+
     // 기본 travel 생성
     @Transactional
     public Long createTravel() {
@@ -71,9 +72,19 @@ public class TravelService {
         LocalDate startDate = photosByDate.keySet().stream().min(LocalDate::compareTo).orElse(LocalDate.MAX);
         LocalDate endDate = photosByDate.keySet().stream().max(LocalDate::compareTo).orElse(LocalDate.MIN);
 
+        LocalDate prevDayDate = null;  // 이전 날짜를 저장하기 위한 변수를 추가
         AtomicInteger sequence = new AtomicInteger(1);
         for (Map.Entry<LocalDate, List<Photo>> dateEntry : photosByDate.entrySet()) {
             LocalDate currentDayDate = dateEntry.getKey();
+
+            // 이전 날짜가 null이 아니면, 즉 두 번째 날짜부터는 이전 날짜와의 차이를 확인
+            if (prevDayDate != null) {
+                long daysBetween = ChronoUnit.DAYS.between(prevDayDate, currentDayDate);
+                // 차이가 1일보다 크면 에러를 발생시킴
+                if (daysBetween > 1) {
+                    throw new IllegalArgumentException("Days are not consecutive. Found a gap at date: " + currentDayDate);
+                }
+            }
             Day day = dayRepository.findByDateAndTravelId(currentDayDate, travel.getId())
                     .map(existingDay -> {
                         sequence.set(existingDay.getSequence());
@@ -106,6 +117,7 @@ public class TravelService {
                             photoRepository.save(photo);
                         }
                     });
+            prevDayDate = currentDayDate;  // 이전 날짜를 현재 날짜로 업데이트
 
         }
 
@@ -128,7 +140,6 @@ public class TravelService {
         return new CalculateResponse(night, travel.getTotalDate(),
                 travel.getStartDate(), travel.getEndDate(),
                 travel.getLocations().size(), travel.getPhotos().size(), locationList);
-
     }
 
 

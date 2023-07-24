@@ -8,6 +8,7 @@ import photolog.api.domain.Location;
 import photolog.api.domain.Photo;
 import photolog.api.dto.Location.DescriptionRequest;
 import photolog.api.dto.Location.LocationResponse;
+import photolog.api.dto.Location.NameAndDescriptionRequest;
 import photolog.api.dto.Location.NameRequest;
 import photolog.api.repository.LocationRepository;
 
@@ -56,5 +57,16 @@ public class LocationService {
         locationRepository.save(location);
 
         return location.getName();
+    }
+
+    @Transactional
+    public void updateNameAndDescription(Long locationId, @NotNull NameAndDescriptionRequest request) {
+        Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new IllegalArgumentException("Location not found with id: " + locationId));
+
+        location.updateName(request.getName());
+        location.updateDescription(request.getDescription());
+        locationRepository.save(location);
+
     }
 }

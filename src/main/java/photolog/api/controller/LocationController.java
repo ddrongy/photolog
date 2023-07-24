@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import photolog.api.dto.Location.DescriptionRequest;
 import photolog.api.dto.Location.LocationResponse;
+import photolog.api.dto.Location.NameAndDescriptionRequest;
 import photolog.api.dto.Location.NameRequest;
 import photolog.api.dto.ResponseDto;
 import photolog.api.service.LocationService;
@@ -60,6 +61,20 @@ public class LocationController {
         response.setStatus(true);
         response.setMessage("Change location name successful.");
         response.setData(updateDescription);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PatchMapping("/{locationId}")
+    @Operation(summary = "장소 name 변경")
+    public ResponseEntity<ResponseDto<Void>> updateLocationInfo(@PathVariable Long locationId,
+                                                          @RequestBody NameAndDescriptionRequest request){
+        locationService.updateNameAndDescription(locationId, request);
+
+        ResponseDto<Void> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("Change location info successful.");
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
