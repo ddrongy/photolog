@@ -40,6 +40,7 @@ public class TravelService {
         return travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
     }
+
     // 기본 travel 생성
     @Transactional
     public Long createTravel() {
@@ -139,7 +140,6 @@ public class TravelService {
         return new CalculateResponse(night, travel.getTotalDate(),
                 travel.getStartDate(), travel.getEndDate(),
                 travel.getLocations().size(), travel.getPhotos().size(), locationList);
-
     }
 
 
