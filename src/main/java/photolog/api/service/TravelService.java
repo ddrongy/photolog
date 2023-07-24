@@ -133,13 +133,22 @@ public class TravelService {
             night--;
         }
 
-        List<Long> locationList = travel.getLocations().stream()
+        List<Long> locationIdList = travel.getLocations().stream()
                 .map(Location::getId)
+                .collect(Collectors.toList());
+
+        List<String> locationAddressList = travel.getLocations().stream()
+                .map(location -> location.getAddress().getFullAddress())
+                .collect(Collectors.toList());
+
+        List<String> locationImgList = travel.getLocations().stream()
+                .filter(location -> location.getPhotos() != null && !location.getPhotos().isEmpty())
+                .map(location -> location.getPhotos().get(0).getImgUrl())
                 .collect(Collectors.toList());
 
         return new CalculateResponse(night, travel.getTotalDate(),
                 travel.getStartDate(), travel.getEndDate(),
-                travel.getLocations().size(), travel.getPhotos().size(), locationList);
+                travel.getLocations().size(), travel.getPhotos().size(), locationIdList,locationAddressList, locationImgList);
     }
 
 
