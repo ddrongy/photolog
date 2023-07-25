@@ -12,19 +12,16 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArticleResponse {
-    private Long id;
-    private Long travel_id;
+public class ArticleCreateResponse {
+    private Long articleId;
+    private Long travelId;
     private String title;
-//    private LocalDate startDate;
-//    private LocalDate endDate;
-//    private Integer totalDate;
     private List<DayDTO> days;
     private Integer budget;
 
-    public ArticleResponse(Article article, Travel travel) {
-        this.id = article.getId();
-        this.travel_id = travel.getId();
+    public ArticleCreateResponse(Article article, Travel travel) {
+        this.articleId = article.getId();
+        this.travelId = travel.getId();
         this.title = article.getTitle();
 //        this.startDate = travel.getStartDate();
 //        this.endDate = travel.getEndDate();
@@ -39,13 +36,13 @@ public class ArticleResponse {
     @NoArgsConstructor
     public static class DayDTO {
 
-        private Long id;
+        private Long dayID;
         private Integer sequence;
         private LocalDate date;
         private List<LocationDTO> locations;
 
         public DayDTO(Day day) {
-            this.id = day.getId();
+            this.dayID = day.getId();
             this.sequence = day.getSequence();
             this.date = day.getDate();
             this.locations = day.getLocations().stream()
@@ -58,14 +55,14 @@ public class ArticleResponse {
     @NoArgsConstructor
     public static class LocationDTO {
 
-        private Long id;
+        private Long locationId;
         private String name;
         private String content;
         private List<String> photoUrls;
         private Coordinate coordinate;
 
         public LocationDTO(Location location) {
-            this.id = location.getId();
+            this.locationId = location.getId();
             this.name = location.getName();
             this.content = location.getContent();
             this.photoUrls = location.getPhotos().stream()

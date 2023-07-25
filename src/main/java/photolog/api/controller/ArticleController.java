@@ -22,13 +22,13 @@ public class ArticleController {
 
     @PostMapping("/{travelId}")
     @Operation(summary = "게시글 작성")
-    public ResponseEntity<ResponseDto<ArticleResponse>> addArticle(@PathVariable Long travelId) {
-        ArticleResponse addArticleResponse = articleService.save(travelId);
+    public ResponseEntity<ResponseDto<ArticleCreateResponse>> addArticle(@PathVariable Long travelId) {
+        ArticleCreateResponse addArticleCreateResponse = articleService.save(travelId);
 
-        ResponseDto<ArticleResponse> response = new ResponseDto<>();
+        ResponseDto<ArticleCreateResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("save article successful.");
-        response.setData(addArticleResponse);
+        response.setData(addArticleCreateResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
@@ -36,14 +36,14 @@ public class ArticleController {
 
     @PatchMapping("/{ArticleId}")
     @Operation(summary = "게시글 수정")
-    public ResponseEntity<ResponseDto<ArticleResponse>> changeTitle(@PathVariable Long ArticleId,
-                                                           @RequestBody ArticleUpdateRequest request){
-        ArticleResponse articleResponse = articleService.updateArticle(ArticleId, request);
+    public ResponseEntity<ResponseDto<ArticleCreateResponse>> changeTitle(@PathVariable Long ArticleId,
+                                                                          @RequestBody ArticleUpdateRequest request){
+        ArticleCreateResponse articleCreateResponse = articleService.updateArticle(ArticleId, request);
 
-        ResponseDto<ArticleResponse> response = new ResponseDto<>();
+        ResponseDto<ArticleCreateResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("update article title successful.");
-        response.setData(articleResponse);
+        response.setData(articleCreateResponse);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
@@ -92,13 +92,13 @@ public class ArticleController {
 
     @GetMapping("/{articleId}")
     @Operation(summary = "게시글 상세 조회")
-    public ResponseEntity<ResponseDto<ArticleResponse>> getArticle(@PathVariable Long articleId){
-        ArticleResponse articleResponse = articleService.getArticleById(articleId);
+    public ResponseEntity<ResponseDto<ArticleCreateResponse>> getArticle(@PathVariable Long articleId){
+        ArticleCreateResponse articleCreateResponse = articleService.getArticleById(articleId);
 
-        ResponseDto<ArticleResponse> response = new ResponseDto<>();
+        ResponseDto<ArticleCreateResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("get article successful.");
-        response.setData(articleResponse);
+        response.setData(articleCreateResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);

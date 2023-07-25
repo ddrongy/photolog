@@ -26,7 +26,7 @@ public class ArticleService {
     private final ArticleReportRepository articleReportRepository;
 
     @Transactional
-    public ArticleResponse save(Long travelId) {
+    public ArticleCreateResponse save(Long travelId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = (String)authentication.getPrincipal();
 
@@ -46,7 +46,7 @@ public class ArticleService {
                     .user(user)
                     .build();
             articleRepository.save(article);
-            return new ArticleResponse(article, travel);
+            return new ArticleCreateResponse(article, travel);
         } else {
             // handle case when travelId does not exist in the database
             throw new IllegalArgumentException("Travel not found with id: " + travelId);
@@ -54,7 +54,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleResponse updateArticle(Long articleId, ArticleUpdateRequest request) {
+    public ArticleCreateResponse updateArticle(Long articleId, ArticleUpdateRequest request) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
@@ -76,16 +76,16 @@ public class ArticleService {
         articleRepository.save(article);
         travelRepository.save(travel);
 
-        return new ArticleResponse(article, travel);
+        return new ArticleCreateResponse(article, travel);
     }
 
     @Transactional
-    public ArticleResponse getArticleById(Long articleId){
+    public ArticleCreateResponse getArticleById(Long articleId){
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
         Travel travel = article.getTravel();
-        return new ArticleResponse(article, travel);
+        return new ArticleCreateResponse(article, travel);
     }
 
     @Transactional
