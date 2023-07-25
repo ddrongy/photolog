@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import photolog.api.dto.Article.*;
+import photolog.api.dto.article.*;
 import photolog.api.dto.ResponseDto;
 import photolog.api.service.ArticleService;
+
+import java.util.List;
 
 @Tag(name = "articles", description = "게시글 API")
 @RequiredArgsConstructor
@@ -20,13 +22,13 @@ public class ArticleController {
 
     @PostMapping("/{travelId}")
     @Operation(summary = "게시글 작성")
-    public ResponseEntity<ResponseDto<ArticleResponse>> addArticle(@PathVariable Long travelId) {
-        ArticleResponse addArticleResponse = articleService.save(travelId);
+    public ResponseEntity<ResponseDto<ArticleCreateResponse>> addArticle(@PathVariable Long travelId) {
+        ArticleCreateResponse addArticleCreateResponse = articleService.save(travelId);
 
-        ResponseDto<ArticleResponse> response = new ResponseDto<>();
+        ResponseDto<ArticleCreateResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("save article successful.");
-        response.setData(addArticleResponse);
+        response.setData(addArticleCreateResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
@@ -35,7 +37,7 @@ public class ArticleController {
     @PatchMapping("/{ArticleId}")
     @Operation(summary = "게시글 수정")
     public ResponseEntity<ResponseDto<ArticleResponse>> changeTitle(@PathVariable Long ArticleId,
-                                                           @RequestBody ArticleUpdateRequest request){
+                                                                          @RequestBody ArticleUpdateRequest request){
         ArticleResponse articleResponse = articleService.updateArticle(ArticleId, request);
 
         ResponseDto<ArticleResponse> response = new ResponseDto<>();
@@ -50,7 +52,7 @@ public class ArticleController {
     @PostMapping("/report/{articleId}")
     @Operation(summary = "게시글 신고")
     public ResponseEntity<ResponseDto<Void>> report(@PathVariable Long articleId) {
-        articleService.report(articleId);
+        articleService.addReport(articleId);
 
         ResponseDto<Void> response = new ResponseDto<>();
         response.setStatus(true);
@@ -99,6 +101,33 @@ public class ArticleController {
         response.setData(articleResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @GetMapping("/travelInfo/{articleId}")
+    @Operation(summary = "여행 정보 끌어오기")
+    public ResponseEntity<ResponseDto<TravelInfoResponse>> getTravelInfo(@PathVariable Long articleId){
+        TravelInfoResponse travelInfo = articleService.getTravelInfo(articleId);
+
+        ResponseDto<TravelInfoResponse> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("get article successful.");
+        response.setData(travelInfo);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+    @GetMapping("")
+    @Operation(summary = "내 article log 조회")
+    public ResponseEntity<ResponseDto<List<MyArticleResponse>>> getMyArticle() {
+        List<MyArticleResponse> myLog = articleService.getMyArticle();
+
+        ResponseDto<List<MyArticleResponse>> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("get my article list successful.");
+        response.setData(myLog);
+
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
 

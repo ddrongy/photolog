@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import photolog.api.domain.Address;
 import photolog.api.domain.Coordinate;
-import photolog.api.dto.Photo.LocationIdRequest;
-import photolog.api.dto.Photo.LocationResponse;
+import photolog.api.dto.photo.LocationIdRequest;
+import photolog.api.dto.photo.LocationResponse;
 import photolog.api.dto.ResponseDto;
 import photolog.api.service.PhotoService;
 import photolog.api.service.S3Service;
@@ -74,6 +74,19 @@ public class PhotoController {
         response.setStatus(true);
         response.setMessage("photo change location successful.");
         response.setData(changedLocation);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PatchMapping ("/hide/{photoId}")
+    @Operation(summary = "photo 숨김 처리")
+    public ResponseEntity<ResponseDto<Void>> changeLocation(@PathVariable Long photoId){
+        photoService.setHide(photoId);
+
+        ResponseDto<Void> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("photo hide in article successful.");
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);

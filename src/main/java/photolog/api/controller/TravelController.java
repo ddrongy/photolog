@@ -7,13 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import photolog.api.domain.Theme;
 import photolog.api.dto.ResponseDto;
-import photolog.api.dto.Travel.CalculateResponse;
+import photolog.api.dto.travel.*;
 
-import photolog.api.dto.Travel.SummaryMapResponse;
-import photolog.api.dto.Travel.SummaryTextResponse;
-import photolog.api.dto.Travel.TitleRequest;
 import photolog.api.service.TravelService;
+
+import java.util.List;
 
 @Tag(name = "travel", description = "여행기록 API")
 @RestController
@@ -37,7 +37,7 @@ public class TravelController {
     }
 
     @PostMapping("/calculate/{travelId}")
-    @Operation(summary = "travel에 사진 추가가 완료된 후, 해당 api를 통해 나머지 정보 계산 후 계산된 결과 불러오기")
+    @Operation(summary = "travel에 사진 추가가 완료 후, 메타 정보 분석/계산")
     public ResponseEntity<ResponseDto<CalculateResponse>> calTravel(@PathVariable Long travelId){
         CalculateResponse calculateResponse = travelService.calTravel(travelId);
 
@@ -52,15 +52,30 @@ public class TravelController {
 
 
     @PatchMapping("/title/{travelId}")
-    @Operation(summary = "여행 title 변경")
+    @Operation(summary = "여행 title 설정")
     public ResponseEntity<ResponseDto<String>> changeTitle(@PathVariable Long travelId,
                                                            @RequestBody TitleRequest request){
         String updateTitle = travelService.updateTitle(travelId, request);
 
         ResponseDto<String> response = new ResponseDto<>();
         response.setStatus(true);
-        response.setMessage("get travel summary successful.");
+        response.setMessage("set travel title successful.");
         response.setData(updateTitle);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PatchMapping("/theme/{travelId}")
+    @Operation(summary = "여행 theme 설정")
+    public ResponseEntity<ResponseDto<Theme>> changeTitle(@PathVariable Long travelId,
+                                                           @RequestBody ThemeRequest request){
+        Theme theme = travelService.updateTheme(travelId, request);
+
+        ResponseDto<Theme> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("set travel theme successful.");
+        response.setData(theme);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
@@ -68,7 +83,7 @@ public class TravelController {
 
 
     @GetMapping("/textSummary/{travelId}")
-    @Operation(summary = "travel summary 조회")
+    @Operation(summary = "travel text summary 조회")
     public ResponseEntity<ResponseDto<SummaryTextResponse>> textSummary(@PathVariable Long travelId) {
         SummaryTextResponse summaryTextResponse = travelService.textSummary(travelId);
 
@@ -82,7 +97,7 @@ public class TravelController {
     }
 
     @GetMapping("/mapSummary/{travelId}")
-    @Operation(summary = "travel summary 조회")
+    @Operation(summary = "travel map summary 조회")
     public ResponseEntity<ResponseDto<SummaryMapResponse>> mapSummary(@PathVariable Long travelId) {
         SummaryMapResponse summaryMapResponse = travelService.mapSummary(travelId);
 
@@ -90,6 +105,20 @@ public class TravelController {
         response.setStatus(true);
         response.setMessage("get travel map summary successful.");
         response.setData(summaryMapResponse);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping("")
+    @Operation(summary = "내 travel log  조회")
+    public ResponseEntity<ResponseDto<List<MyLogResponse>>> getMyLog() {
+        List<MyLogResponse> myLog = travelService.getMyLog();
+
+        ResponseDto<List<MyLogResponse>> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("get my travel log successful.");
+        response.setData(myLog);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);

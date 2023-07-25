@@ -32,7 +32,8 @@ public class Photo {
     @Embedded
     private Address address;
 
-    private Boolean article;
+    @Column(name = "hide", nullable = false)
+    private Boolean hide;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "travel_id")
@@ -80,7 +81,7 @@ public class Photo {
         photo.setDateTime(dateTime);
         photo.setCoordinate(coordinate);
         photo.setAddress(address);
-        photo.setArticle();
+        photo.setHide(false);
 
         return photo;
     }
@@ -101,8 +102,8 @@ public class Photo {
         this.imgUrl = imgUrl;
     }
 
-    private void setArticle () {
-        this.article = true;
+    public void setHide (Boolean hide) {
+        this.hide = hide;
     }
 
 }

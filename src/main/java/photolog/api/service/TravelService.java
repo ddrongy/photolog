@@ -9,10 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
-import photolog.api.dto.Travel.CalculateResponse;
-import photolog.api.dto.Travel.SummaryMapResponse;
-import photolog.api.dto.Travel.SummaryTextResponse;
-import photolog.api.dto.Travel.TitleRequest;
+import photolog.api.dto.travel.*;
 import photolog.api.repository.*;
 
 import java.time.LocalDate;
@@ -164,6 +161,17 @@ public class TravelService {
     }
 
     @Transactional
+    public Theme updateTheme(Long travelId, ThemeRequest request) {
+        Travel travel = travelRepository.findById(travelId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
+
+        travel.updateTheme(request.getTheme());
+        travelRepository.save(travel);
+
+        return travel.getTheme();
+    }
+
+    @Transactional
     public SummaryTextResponse textSummary(Long travelId) {
         Travel travel = travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
@@ -175,6 +183,31 @@ public class TravelService {
         Travel travel = travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
         return new SummaryMapResponse(travel);
+    }
+
+    @Transactional
+    public List<MyLogResponse> getMyLog() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + userEmail));
+
+        List<Travel> travels = travelRepository.findByUser(user);
+
+        return travels.stream().map(travel -> {
+            Location firstLocation = travel.getLocations().get(0);
+            Photo firstPhoto = firstLocation.getPhotos().get(0);
+
+            return new MyLogResponse(
+                    firstLocation.getAddress().getCity(),
+                    travel.getTitle(),
+                    travel.getStartDate(),
+                    travel.getEndDate(),
+                    firstPhoto.getImgUrl(),
+                    travel.getPhotos().size()
+            );
+        }).collect(Collectors.toList());
     }
 
     @Transactional
