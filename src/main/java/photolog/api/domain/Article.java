@@ -2,7 +2,6 @@ package photolog.api.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +20,8 @@ public class Article {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "content")
-    private String content;
+    @Column(name = "summary")
+    private String summary;
 
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "travel_id", nullable = true)
@@ -68,9 +67,9 @@ public class Article {
         this.reportCount = reportCount;
         if (reportCount>=5) this.hide = true;
     }
-    public void updateTitleAndContent(String title, String content) {
+    public void updateTitleAndSummary(String title, String summary) {
         this.title = title;
-        this.content = content;
+        this.summary = summary;
     }
 
     public void setBudget(Integer budget) {this.budget = budget;}

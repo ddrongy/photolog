@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ArticleUpdateRequest {
     private String title;
-    private String content;
+    private String summary;
     private List<String> locationContent;
     private Integer budget;
 }

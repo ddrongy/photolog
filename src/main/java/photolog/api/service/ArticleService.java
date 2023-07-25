@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
 import photolog.api.dto.Article.*;
-import photolog.api.dto.Travel.MyLogResponse;
 import photolog.api.repository.*;
 
 import java.time.LocalDateTime;
@@ -59,7 +58,7 @@ public class ArticleService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
-        article.updateTitleAndContent(request.getTitle(), request.getContent());
+        article.updateTitleAndSummary(request.getTitle(), request.getSummary());
 
         Travel travel = article.getTravel();
         List<Location> locations = travel.getLocations();
