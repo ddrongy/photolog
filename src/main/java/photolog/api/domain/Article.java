@@ -23,6 +23,8 @@ public class Article {
     @Column(name = "summary")
     private String summary;
 
+    private Integer budget;  //20, 40, 60, 80, 100
+
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "travel_id", nullable = true)
     private Travel travel;
@@ -33,15 +35,18 @@ public class Article {
 
     private Integer likeCount;
     private Integer reportCount;
+    private Integer bookmarkCount;
     private Boolean hide;
-    private Integer bookmarks;
-    private Integer budget;  //20, 40, 60, 80, 100
+
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ArticleLike> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private List<ArticleReport> reports = new ArrayList<>();
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    private List<Bookmark> bookmarks = new ArrayList<>();
 
     @Builder
     public Article(Travel travel, User user) {
@@ -51,16 +56,16 @@ public class Article {
         user.getArticles().add(this);
         this.likeCount = 0;
         this.reportCount = 0;
-        this.bookmarks = 0;
+        this.bookmarkCount = 0;
         this.hide = false;
     }
 
-    public void addBookmark(){
-        this.bookmarks++;
-    }
 
     public void setLikeCount(Integer count) {
         this.likeCount = count;
+    }
+    public void setBookmarkCount(Integer count) {
+        this.bookmarkCount = count;
     }
 
     public void setReportCount(Integer reportCount) {
@@ -74,7 +79,4 @@ public class Article {
 
     public void setBudget(Integer budget) {this.budget = budget;}
 
-    public void setHide(boolean hide) {
-        this.hide = hide;
-    }
 }
