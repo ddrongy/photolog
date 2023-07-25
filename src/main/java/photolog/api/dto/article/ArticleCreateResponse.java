@@ -63,7 +63,7 @@ public class ArticleCreateResponse {
             this.name = location.getName();
             this.content = location.getContent();
             this.photoUrls = location.getPhotos().stream()
-                    .filter(photo -> photo.getArticle() == true)
+                    .filter(photo -> photo.getHide() == false)
                     .map(Photo::getImgUrl)
                     .collect(Collectors.toList());
             this.coordinate = location.getCoordinate();

@@ -70,8 +70,17 @@ public class PhotoService {
 
         locationRepository.save(newLocation);
 
-
         return newLocation.getId();
+    }
+
+    @Transactional
+    public void setHide(Long photoId){
+        //photo 조회
+        Photo photo = photoRepository.findById(photoId)
+                .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));
+
+        photo.setHide(true);
+        photoRepository.save(photo);
     }
     @Transactional
     public void delete(Long photoId){

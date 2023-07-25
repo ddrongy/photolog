@@ -79,6 +79,19 @@ public class PhotoController {
                 .body(response);
     }
 
+    @PatchMapping ("/hide/{photoId}")
+    @Operation(summary = "photo에 숨김 처리")
+    public ResponseEntity<ResponseDto<Void>> changeLocation(@PathVariable Long photoId){
+        photoService.setHide(photoId);
+
+        ResponseDto<Void> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("photo hide in article successful.");
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
     @DeleteMapping("/{photoId}")
     @Operation(summary = "photo 삭제")
     // photo 삭제시, travel, location 에서도 삭제되나 확인해야함

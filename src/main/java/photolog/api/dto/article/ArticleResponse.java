@@ -55,6 +55,7 @@ public class ArticleResponse {
         private Long locationId;
         private String name;
         private String content;
+        private List<Long> photoIds;
         private List<String> photoUrls;
         private Coordinate coordinate;
 
@@ -62,8 +63,12 @@ public class ArticleResponse {
             this.locationId = location.getId();
             this.name = location.getName();
             this.content = location.getContent();
+            this.photoIds = location.getPhotos().stream()
+                    .filter(photo -> photo.getHide() == false)
+                    .map(Photo::getId)
+                    .collect(Collectors.toList());
             this.photoUrls = location.getPhotos().stream()
-                    .filter(photo -> photo.getArticle() == true)
+                    .filter(photo -> photo.getHide() == false)
                     .map(Photo::getImgUrl)
                     .collect(Collectors.toList());
             this.coordinate = location.getCoordinate();
