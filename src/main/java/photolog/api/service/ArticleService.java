@@ -80,6 +80,16 @@ public class ArticleService {
     }
 
     @Transactional
+    public TravelInfoResponse getTravelInfo(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
+
+        Travel travel = article.getTravel();
+
+        return new TravelInfoResponse(travel);
+    }
+
+    @Transactional
     public ArticleResponse getArticleById(Long articleId){
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));

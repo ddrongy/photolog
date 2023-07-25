@@ -103,6 +103,20 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
+
+    @GetMapping("/travelInfo/{articleId}")
+    @Operation(summary = "여행 정보 끌어오기")
+    public ResponseEntity<ResponseDto<TravelInfoResponse>> getTravelInfo(@PathVariable Long articleId){
+        TravelInfoResponse travelInfo = articleService.getTravelInfo(articleId);
+
+        ResponseDto<TravelInfoResponse> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("get article successful.");
+        response.setData(travelInfo);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
     @GetMapping("")
     @Operation(summary = "내 article log 조회")
     public ResponseEntity<ResponseDto<List<MyArticleResponse>>> getMyArticle() {

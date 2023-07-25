@@ -80,7 +80,7 @@ public class PhotoController {
     }
 
     @PatchMapping ("/hide/{photoId}")
-    @Operation(summary = "photo에 숨김 처리")
+    @Operation(summary = "photo 숨김 처리")
     public ResponseEntity<ResponseDto<Void>> changeLocation(@PathVariable Long photoId){
         photoService.setHide(photoId);
 
