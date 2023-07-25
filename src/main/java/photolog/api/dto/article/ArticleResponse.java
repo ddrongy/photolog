@@ -19,6 +19,8 @@ public class ArticleResponse {
     private Integer budget;
     private Theme theme;
 
+    private Integer likes;
+    private Integer bookmarks;
     public ArticleResponse(Article article, Travel travel) {
         this.articleId = article.getId();
         this.title = article.getTitle();
@@ -27,6 +29,9 @@ public class ArticleResponse {
                 .collect(Collectors.toList());
         this.budget = article.getBudget();
         this.theme = travel.getTheme();
+
+        this.likes = article.getLikeCount();
+        this.bookmarks = article.getBookmarkCount();
     }
 
     @Getter

@@ -76,7 +76,7 @@ public class ArticleController {
                 .body(response);
     }
 
-    @PostMapping("/cancelLike/{articleId}")
+    @DeleteMapping("/cancelLike/{articleId}")
     @Operation(summary = "게시글 like 취소")
     public ResponseEntity<ResponseDto<Integer>> cancelLike(@PathVariable Long articleId) {
         Integer likes = articleService.cancelLike(articleId);
@@ -85,6 +85,34 @@ public class ArticleController {
         response.setStatus(true);
         response.setMessage("cancel Like successful.");
         response.setData(likes);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PostMapping("/addBookmark/{articleId}")
+    @Operation(summary = "게시글 bookmark")
+    public ResponseEntity<ResponseDto<Integer>> addBookmark(@PathVariable Long articleId) {
+        Integer bookmarkCount = articleService.addBookmark(articleId);
+
+        ResponseDto<Integer> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("add bookmark successful.");
+        response.setData(bookmarkCount);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @DeleteMapping("/cancelBookmark/{articleId}")
+    @Operation(summary = "게시글 bookmark 취소")
+    public ResponseEntity<ResponseDto<Integer>> cancelBookmark(@PathVariable Long articleId) {
+        Integer bookmarkCount = articleService.cancelBookmark(articleId);
+
+        ResponseDto<Integer> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("cancel bookmark successful.");
+        response.setData(bookmarkCount);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);

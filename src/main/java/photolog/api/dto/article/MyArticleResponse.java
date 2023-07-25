@@ -18,5 +18,5 @@ public class MyArticleResponse {
     private String thumbnail;
     private Integer photoCnt;
     private Integer likes;
-//    private Integer Bookmarks;
+    private Integer Bookmarks;
 }

@@ -10,6 +10,7 @@ import photolog.api.domain.*;
 import photolog.api.dto.article.*;
 import photolog.api.repository.*;
 
+import java.awt.print.Book;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleReportRepository articleReportRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     @Transactional
     public ArticleCreateResponse save(Long travelId) {
@@ -178,6 +180,62 @@ public class ArticleService {
     }
 
     @Transactional
+    public Integer addBookmark(Long articleId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String)authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("Article does not exist."));
+
+        if (article.getUser().equals(user)) {
+            throw new IllegalArgumentException("본인 게시글에는 북마크가 불가합니다");
+        }
+
+        if (bookmarkRepository.findByArticleAndUser(article, user).isPresent()) {
+            throw new IllegalArgumentException("이미 북마크 한 글 입니다");
+        }
+
+        Bookmark bookmark = new Bookmark(article, user, LocalDateTime.now());
+        article.getBookmarks().add(bookmark);
+        user.getBookmarks().add(bookmark);
+
+        article.setBookmarkCount(article.getBookmarks().size());
+        articleRepository.save(article);
+        bookmarkRepository.save(bookmark);
+
+        return article.getBookmarks().size();
+    }
+
+
+    @Transactional
+    public Integer cancelBookmark(Long articleId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String)authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("Article does not exist."));
+
+        Bookmark bookmark = bookmarkRepository.findByArticleAndUser(article, user)
+                .orElseThrow(() -> new IllegalArgumentException("북마크 하지 않은 글 입니다"));
+
+        article.getBookmarks().remove(bookmark);
+        user.getBookmarks().remove(bookmark);
+
+        article.setBookmarkCount(article.getBookmarks().size());
+        articleRepository.save(article);
+
+        bookmarkRepository.delete(bookmark);
+
+        return article.getLikes().size();
+    }
+
+    @Transactional
     public Integer addReport(Long articleId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = (String)authentication.getPrincipal();
@@ -232,7 +290,8 @@ public class ArticleService {
                     travel.getEndDate(),
                     firstPhoto.getImgUrl(),
                     travel.getPhotos().size(),
-                    article.getLikes().size()
+                    article.getLikeCount(),
+                    article.getBookmarkCount()
             );
         }).collect(Collectors.toList());
     }
