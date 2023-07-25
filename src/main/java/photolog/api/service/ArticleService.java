@@ -9,11 +9,9 @@ import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
 import photolog.api.dto.Article.*;
 import photolog.api.dto.Travel.MyLogResponse;
-import photolog.api.repository.ArticleRepository;
-import photolog.api.repository.LocationRepository;
-import photolog.api.repository.TravelRepository;
-import photolog.api.repository.UserRepository;
+import photolog.api.repository.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,21 +23,21 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final TravelRepository travelRepository;
     private final UserRepository userRepository;
-    private final LocationRepository locationRepository;
+    private final ArticleLikeRepository articleLikeRepository;
+    private final ArticleReportRepository articleReportRepository;
 
     @Transactional
     public ArticleResponse save(Long travelId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = (String)authentication.getPrincipal();
 
-        User user = userRepository.findByEmail(userEmail)  // Assuming you have a findByUsername method
+        User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + userEmail));
 
         Optional<Travel> travelOpt = travelRepository.findById(travelId);
         if (travelOpt.isPresent()) {
             Travel travel = travelOpt.get();
 
-            // Check if the travel already has an article
             if (travel.getArticle() != null) {
                 throw new IllegalArgumentException("Travel already has an associated article.");
             }
@@ -100,40 +98,102 @@ public class ArticleService {
         Travel travel = article.getTravel();
 
         user.getArticles().remove(article);
-        userRepository.save(user);  // Save user's changes
+        userRepository.save(user);
 
         travel.setArticle(null);
-        travelRepository.save(travel);  // Save travel's changes
+        travelRepository.save(travel);
 
         articleRepository.delete(article);
     }
 
+    @Transactional
     public Integer addLike(Long articleId) {
-        Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String)authentication.getPrincipal();
 
-        article.addLike();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("Article does not exist."));
+
+        if (article.getUser().equals(user)) {
+            throw new IllegalArgumentException("본인 게시글에는 좋아요가 불가합니다");
+        }
+
+        if (articleLikeRepository.findByArticleAndUser(article, user).isPresent()) {
+            throw new IllegalArgumentException("이미 좋아요 한 글 입니다");
+        }
+
+        ArticleLike articleLike = new ArticleLike(article, user, LocalDateTime.now());
+
+        article.getLikes().add(articleLike);
+        user.getLikes().add(articleLike);
+
+        article.setLikeCount(article.getLikes().size());
         articleRepository.save(article);
-        return article.getLikes();
+
+        articleLikeRepository.save(articleLike);
+
+        return article.getLikes().size();
     }
 
 
+    @Transactional
     public Integer cancelLike(Long articleId) {
-        Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String)authentication.getPrincipal();
 
-        article.cancelLike();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("Article does not exist."));
+
+        ArticleLike likeToRemove = articleLikeRepository.findByArticleAndUser(article, user)
+                .orElseThrow(() -> new IllegalArgumentException("좋아요 하지 않은 글 입니다"));
+
+        article.getLikes().remove(likeToRemove);
+        user.getLikes().remove(likeToRemove);
+
+        article.setLikeCount(article.getLikes().size());
         articleRepository.save(article);
-        return article.getLikes();
+
+        articleLikeRepository.delete(likeToRemove);
+
+        return article.getLikes().size();
     }
 
-    public void report(Long articleId) {
-        Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
+    @Transactional
+    public Integer addReport(Long articleId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String)authentication.getPrincipal();
 
-        article.addReport();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("Article does not exist."));
+
+        if (article.getUser().equals(user)) {
+            throw new IllegalArgumentException("내가 쓴 글에는 누를 수 없어요");
+        }
+
+        if (articleReportRepository.findByArticleAndUser(article, user).isPresent()) {
+            throw new IllegalArgumentException("이미 신고한 글이에요");
+        }
+
+        ArticleReport articleReport = new ArticleReport(article, user, LocalDateTime.now());
+
+        articleReportRepository.save(articleReport);
+
+        int reportCount = article.getReports().size();
+        article.setReportCount(reportCount);
         articleRepository.save(article);
+
+        return reportCount;
     }
+
 
     @Transactional
     public List<MyArticleResponse> getMyArticle() {
@@ -158,7 +218,7 @@ public class ArticleService {
                     travel.getEndDate(),
                     firstPhoto.getImgUrl(),
                     travel.getPhotos().size(),
-                    article.getLikes()
+                    article.getLikes().size()
             );
         }).collect(Collectors.toList());
     }

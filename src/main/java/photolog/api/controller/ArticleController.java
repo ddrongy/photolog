@@ -53,7 +53,7 @@ public class ArticleController {
     @PostMapping("/report/{articleId}")
     @Operation(summary = "게시글 신고")
     public ResponseEntity<ResponseDto<Void>> report(@PathVariable Long articleId) {
-        articleService.report(articleId);
+        articleService.addReport(articleId);
 
         ResponseDto<Void> response = new ResponseDto<>();
         response.setStatus(true);
