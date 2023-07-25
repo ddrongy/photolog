@@ -200,6 +200,7 @@ public class TravelService {
             Photo firstPhoto = firstLocation.getPhotos().get(0);
 
             return new MyLogResponse(
+                    travel.getId(),
                     firstLocation.getAddress().getCity(),
                     travel.getTitle(),
                     travel.getStartDate(),

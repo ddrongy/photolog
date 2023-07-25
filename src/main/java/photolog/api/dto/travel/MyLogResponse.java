@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 public class MyLogResponse {
-
+    private Long travelId;
     private String city;
     private String title;
     private LocalDate startDate;
