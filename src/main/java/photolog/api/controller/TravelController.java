@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import photolog.api.domain.Theme;
 import photolog.api.dto.ResponseDto;
-import photolog.api.dto.Travel.*;
+import photolog.api.dto.travel.*;
 
 import photolog.api.service.TravelService;
 
@@ -37,7 +37,7 @@ public class TravelController {
     }
 
     @PostMapping("/calculate/{travelId}")
-    @Operation(summary = "travel에 사진 추가가 완료된 후, 해당 api를 통해 나머지 정보 계산 후 계산된 결과 불러오기")
+    @Operation(summary = "travel에 사진 추가가 완료 후, 메타 정보 분석/계산")
     public ResponseEntity<ResponseDto<CalculateResponse>> calTravel(@PathVariable Long travelId){
         CalculateResponse calculateResponse = travelService.calTravel(travelId);
 
@@ -83,7 +83,7 @@ public class TravelController {
 
 
     @GetMapping("/textSummary/{travelId}")
-    @Operation(summary = "travel summary 조회")
+    @Operation(summary = "travel text summary 조회")
     public ResponseEntity<ResponseDto<SummaryTextResponse>> textSummary(@PathVariable Long travelId) {
         SummaryTextResponse summaryTextResponse = travelService.textSummary(travelId);
 
@@ -97,7 +97,7 @@ public class TravelController {
     }
 
     @GetMapping("/mapSummary/{travelId}")
-    @Operation(summary = "travel summary 조회")
+    @Operation(summary = "travel map summary 조회")
     public ResponseEntity<ResponseDto<SummaryMapResponse>> mapSummary(@PathVariable Long travelId) {
         SummaryMapResponse summaryMapResponse = travelService.mapSummary(travelId);
 

@@ -6,9 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import photolog.api.dto.Article.*;
+import photolog.api.dto.article.*;
 import photolog.api.dto.ResponseDto;
-import photolog.api.dto.Travel.MyLogResponse;
 import photolog.api.service.ArticleService;
 
 import java.util.List;

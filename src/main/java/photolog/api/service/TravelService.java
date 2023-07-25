@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
-import photolog.api.dto.Travel.*;
+import photolog.api.dto.travel.*;
 import photolog.api.repository.*;
 
 import java.time.LocalDate;

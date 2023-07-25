@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import photolog.api.dto.Location.DescriptionRequest;
-import photolog.api.dto.Location.LocationResponse;
-import photolog.api.dto.Location.NameAndDescriptionRequest;
-import photolog.api.dto.Location.NameRequest;
+import photolog.api.dto.location.DescriptionRequest;
+import photolog.api.dto.location.LocationResponse;
+import photolog.api.dto.location.NameAndDescriptionRequest;
+import photolog.api.dto.location.NameRequest;
 import photolog.api.dto.ResponseDto;
 import photolog.api.service.LocationService;
 

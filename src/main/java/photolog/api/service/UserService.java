@@ -8,16 +8,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import photolog.api.domain.Article;
 import photolog.api.domain.User;
-import photolog.api.dto.User.*;
+import photolog.api.dto.user.*;
 import photolog.api.repository.UserRepository;
 import photolog.api.utils.JwtUtil;
 
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
