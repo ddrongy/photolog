@@ -38,7 +38,7 @@ public class ArticleService {
             Travel travel = travelOpt.get();
 
             if (travel.getArticle() != null) {
-                throw new IllegalArgumentException("Travel already has an associated article.");
+                throw new IllegalArgumentException("이미 해당 여행에 생성된 게시글이 존재 합니다.");
             }
 
             Article article = Article.builder()
@@ -54,7 +54,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleCreateResponse updateArticle(Long articleId, ArticleUpdateRequest request) {
+    public ArticleResponse updateArticle(Long articleId, ArticleUpdateRequest request) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
@@ -64,7 +64,7 @@ public class ArticleService {
         List<Location> locations = travel.getLocations();
 
         if (locations.size() != request.getLocationContent().size()) {
-            throw new IllegalArgumentException("The size of the locations and locationContent lists must be the same.");
+            throw new IllegalArgumentException("article의 Location 수와 실제 location수가 일치하지 않음");
         }
 
         for (int i = 0; i < locations.size(); i++) {
@@ -76,16 +76,20 @@ public class ArticleService {
         articleRepository.save(article);
         travelRepository.save(travel);
 
-        return new ArticleCreateResponse(article, travel);
+        return new ArticleResponse(article, travel);
     }
 
     @Transactional
-    public ArticleCreateResponse getArticleById(Long articleId){
+    public ArticleResponse getArticleById(Long articleId){
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
+        if(article.getHide()){
+            throw new IllegalArgumentException("광고/홍보글 신고로 인해 숨김 처리된 글입니다");
+        }
+
         Travel travel = article.getTravel();
-        return new ArticleCreateResponse(article, travel);
+        return new ArticleResponse(article, travel);
     }
 
     @Transactional
@@ -211,6 +215,7 @@ public class ArticleService {
             Photo firstPhoto = firstLocation.getPhotos().get(0);
 
             return new MyArticleResponse(
+                    article.getId(),
                     firstLocation.getAddress().getCity(),
                     article.getTitle(),
                     travel.getStartDate(),

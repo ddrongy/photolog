@@ -36,14 +36,14 @@ public class ArticleController {
 
     @PatchMapping("/{ArticleId}")
     @Operation(summary = "게시글 수정")
-    public ResponseEntity<ResponseDto<ArticleCreateResponse>> changeTitle(@PathVariable Long ArticleId,
+    public ResponseEntity<ResponseDto<ArticleResponse>> changeTitle(@PathVariable Long ArticleId,
                                                                           @RequestBody ArticleUpdateRequest request){
-        ArticleCreateResponse articleCreateResponse = articleService.updateArticle(ArticleId, request);
+        ArticleResponse articleResponse = articleService.updateArticle(ArticleId, request);
 
-        ResponseDto<ArticleCreateResponse> response = new ResponseDto<>();
+        ResponseDto<ArticleResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("update article title successful.");
-        response.setData(articleCreateResponse);
+        response.setData(articleResponse);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
@@ -92,19 +92,19 @@ public class ArticleController {
 
     @GetMapping("/{articleId}")
     @Operation(summary = "게시글 상세 조회")
-    public ResponseEntity<ResponseDto<ArticleCreateResponse>> getArticle(@PathVariable Long articleId){
-        ArticleCreateResponse articleCreateResponse = articleService.getArticleById(articleId);
+    public ResponseEntity<ResponseDto<ArticleResponse>> getArticle(@PathVariable Long articleId){
+        ArticleResponse articleResponse = articleService.getArticleById(articleId);
 
-        ResponseDto<ArticleCreateResponse> response = new ResponseDto<>();
+        ResponseDto<ArticleResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("get article successful.");
-        response.setData(articleCreateResponse);
+        response.setData(articleResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
     @GetMapping("")
-    @Operation(summary = "내 article log  조회")
+    @Operation(summary = "내 article log 조회")
     public ResponseEntity<ResponseDto<List<MyArticleResponse>>> getMyArticle() {
         List<MyArticleResponse> myLog = articleService.getMyArticle();
 

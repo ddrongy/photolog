@@ -12,20 +12,20 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArticleCreateResponse {
+public class ArticleResponse {
     private Long articleId;
-    private Long travelId;
     private String title;
     private List<DayDTO> days;
+    private Integer budget;
     private Theme theme;
 
-    public ArticleCreateResponse(Article article, Travel travel) {
+    public ArticleResponse(Article article, Travel travel) {
         this.articleId = article.getId();
-        this.travelId = travel.getId();
         this.title = article.getTitle();
         this.days = travel.getDays().stream()
                 .map(DayDTO::new)
                 .collect(Collectors.toList());
+        this.budget = article.getBudget();
         this.theme = travel.getTheme();
     }
 

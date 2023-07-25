@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 public class MyArticleResponse {
+    private Long id;
     private String city;
     private String title;
     private LocalDate startDate;
