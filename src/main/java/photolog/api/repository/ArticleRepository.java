@@ -8,5 +8,5 @@ import photolog.api.domain.User;
 import java.util.List;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-    List<Article> findByUser(User user);
+    List<Article> findByUserAndHideIsFalse(User user);
 }

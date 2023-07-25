@@ -206,7 +206,7 @@ public class ArticleService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + userEmail));
 
-        List<Article> articles = articleRepository.findByUser(user);
+        List<Article> articles = articleRepository.findByUserAndHideIsFalse(user);
 
         return articles.stream().map(article -> {
             Travel travel = article.getTravel();
@@ -226,5 +226,6 @@ public class ArticleService {
             );
         }).collect(Collectors.toList());
     }
+
 
 }
