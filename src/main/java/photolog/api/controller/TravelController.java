@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import photolog.api.domain.Theme;
 import photolog.api.dto.ResponseDto;
 import photolog.api.dto.Travel.*;
 
@@ -51,15 +52,30 @@ public class TravelController {
 
 
     @PatchMapping("/title/{travelId}")
-    @Operation(summary = "여행 title 변경")
+    @Operation(summary = "여행 title 설정")
     public ResponseEntity<ResponseDto<String>> changeTitle(@PathVariable Long travelId,
                                                            @RequestBody TitleRequest request){
         String updateTitle = travelService.updateTitle(travelId, request);
 
         ResponseDto<String> response = new ResponseDto<>();
         response.setStatus(true);
-        response.setMessage("get travel summary successful.");
+        response.setMessage("set travel title successful.");
         response.setData(updateTitle);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PatchMapping("/theme/{travelId}")
+    @Operation(summary = "여행 theme 설정")
+    public ResponseEntity<ResponseDto<Theme>> changeTitle(@PathVariable Long travelId,
+                                                           @RequestBody ThemeRequest request){
+        Theme theme = travelService.updateTheme(travelId, request);
+
+        ResponseDto<Theme> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("set travel theme successful.");
+        response.setData(theme);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);

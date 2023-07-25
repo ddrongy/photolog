@@ -1,5 +1,6 @@
 package photolog.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,10 @@ public class Travel {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer totalDate;
+
+    @Enumerated(EnumType.STRING)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Theme theme; // 여행 테마
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
@@ -53,6 +58,10 @@ public class Travel {
 
     public void updateTitle(String title) {
         this.title = title;
+    }
+
+    public void updateTheme(Theme theme) {
+        this.theme = theme;
     }
 
     public void setArticle(Article article) {

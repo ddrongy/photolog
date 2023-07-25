@@ -161,6 +161,17 @@ public class TravelService {
     }
 
     @Transactional
+    public Theme updateTheme(Long travelId, ThemeRequest request) {
+        Travel travel = travelRepository.findById(travelId)
+                .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
+
+        travel.updateTheme(request.getTheme());
+        travelRepository.save(travel);
+
+        return travel.getTheme();
+    }
+
+    @Transactional
     public SummaryTextResponse textSummary(Long travelId) {
         Travel travel = travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
