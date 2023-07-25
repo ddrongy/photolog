@@ -21,8 +21,7 @@ public class ArticleCreateResponse {
 
     public ArticleCreateResponse(Article article, Travel travel) {
         this.articleId = article.getId();
-        this.travelId = travel.getId();
-        this.title = article.getTitle();
+        this.title = travel.getTitle();
         this.days = travel.getDays().stream()
                 .map(DayDTO::new)
                 .collect(Collectors.toList());
@@ -55,13 +54,18 @@ public class ArticleCreateResponse {
         private Long locationId;
         private String name;
         private String content;
+        private List<Long> photoIds;
         private List<String> photoUrls;
         private Coordinate coordinate;
 
         public LocationDTO(Location location) {
             this.locationId = location.getId();
             this.name = location.getName();
-            this.content = location.getContent();
+            this.content = location.getDescription();
+            this.photoIds = location.getPhotos().stream()
+                    .filter(photo -> photo.getHide() == false)
+                    .map(Photo::getId)
+                    .collect(Collectors.toList());
             this.photoUrls = location.getPhotos().stream()
                     .filter(photo -> photo.getHide() == false)
                     .map(Photo::getImgUrl)
