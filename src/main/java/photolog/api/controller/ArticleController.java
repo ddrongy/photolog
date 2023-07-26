@@ -3,9 +3,13 @@ package photolog.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import photolog.api.domain.Theme;
 import photolog.api.dto.article.*;
 import photolog.api.dto.ResponseDto;
 import photolog.api.service.ArticleService;
@@ -36,14 +40,14 @@ public class ArticleController {
 
     @PatchMapping("/{ArticleId}")
     @Operation(summary = "게시글 수정")
-    public ResponseEntity<ResponseDto<ArticleResponse>> changeTitle(@PathVariable Long ArticleId,
+    public ResponseEntity<ResponseDto<ArticleDetailResponse>> changeTitle(@PathVariable Long ArticleId,
                                                                           @RequestBody ArticleUpdateRequest request){
-        ArticleResponse articleResponse = articleService.updateArticle(ArticleId, request);
+        ArticleDetailResponse articleDetailResponse = articleService.updateArticle(ArticleId, request);
 
-        ResponseDto<ArticleResponse> response = new ResponseDto<>();
+        ResponseDto<ArticleDetailResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("update article title successful.");
-        response.setData(articleResponse);
+        response.setData(articleDetailResponse);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
@@ -120,13 +124,13 @@ public class ArticleController {
 
     @GetMapping("/{articleId}")
     @Operation(summary = "게시글 상세 조회")
-    public ResponseEntity<ResponseDto<ArticleResponse>> getArticle(@PathVariable Long articleId){
-        ArticleResponse articleResponse = articleService.getArticleById(articleId);
+    public ResponseEntity<ResponseDto<ArticleDetailResponse>> getArticle(@PathVariable Long articleId){
+        ArticleDetailResponse articleDetailResponse = articleService.getArticleById(articleId);
 
-        ResponseDto<ArticleResponse> response = new ResponseDto<>();
+        ResponseDto<ArticleDetailResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("get article successful.");
-        response.setData(articleResponse);
+        response.setData(articleDetailResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
@@ -147,13 +151,35 @@ public class ArticleController {
     }
     @GetMapping("")
     @Operation(summary = "내 article log 조회")
-    public ResponseEntity<ResponseDto<List<MyArticleResponse>>> getMyArticle() {
-        List<MyArticleResponse> myLog = articleService.getMyArticle();
+    public ResponseEntity<ResponseDto<List<ArticleResponse>>> getMyArticle() {
+        List<ArticleResponse> myLog = articleService.getMyArticle();
 
-        ResponseDto<List<MyArticleResponse>> response = new ResponseDto<>();
+        ResponseDto<List<ArticleResponse>> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("get my article list successful.");
         response.setData(myLog);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping("/filtering")
+    @Operation(summary = "article 정렬 및 필터링")
+    public ResponseEntity<ResponseDto<List<ArticleResponse>>> getSortedArticles(
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) Theme theme,
+            @RequestParam(required = false) Integer startBudget,
+            @RequestParam(required = false) Integer endBudget,
+            @RequestParam(required = false) Integer day,
+            @RequestParam(required = false) String city) {
+
+        System.out.println("controller city = "+ city);
+        List<ArticleResponse> sortedArticle = articleService.getFilteredAndSortedArticles(sort, theme, city, startBudget, endBudget, day);
+
+        ResponseDto<List<ArticleResponse>> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("get my article list successful.");
+        response.setData(sortedArticle);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
@@ -163,6 +189,7 @@ public class ArticleController {
     @Operation(summary = "게시글 삭제")
     public ResponseEntity<ResponseDto<Void>> delete(@PathVariable Long articleId) {
         articleService.delete(articleId);
+
         ResponseDto<Void> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("article deletion successful.");
