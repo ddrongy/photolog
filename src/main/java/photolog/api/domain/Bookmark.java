@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "bookmark")
+@Table(name = "bookmarks")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Bookmark {
