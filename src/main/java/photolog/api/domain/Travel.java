@@ -25,9 +25,11 @@ public class Travel {
     private LocalDate endDate;
     private Integer totalDate;
 
+    @ElementCollection(targetClass=Theme.class)
     @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "travel_theme")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Theme theme; // 여행 테마
+    private List<Theme> theme = new ArrayList<>(); // 여행 테마
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
@@ -60,8 +62,8 @@ public class Travel {
         this.title = title;
     }
 
-    public void updateTheme(Theme theme) {
-        this.theme = theme;
+    public void updateTheme(List<Theme> themes) {
+        this.theme = themes;
     }
 
     public void setArticle(Article article) {

@@ -32,12 +32,11 @@ public class ArticleService {
     private final BookmarkRepository bookmarkRepository;
 
     public Specification<Article> createSpec(Theme theme, String city, Integer startBudget, Integer endBudget, Integer day) {
-        System.out.println("City = "+ city);
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             if(theme != null) {
-                predicates.add(cb.equal(root.join("travel").get("theme"), theme));
+                predicates.add(cb.isMember(theme, root.join("travel").get("theme")));
             }
             if(city != null) {
                 Subquery<Location> locationSubQuery = query.subquery(Location.class);
