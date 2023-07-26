@@ -1,7 +1,11 @@
 package photolog.api.service;
 
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,8 +14,8 @@ import photolog.api.domain.*;
 import photolog.api.dto.article.*;
 import photolog.api.repository.*;
 
-import java.awt.print.Book;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +30,41 @@ public class ArticleService {
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleReportRepository articleReportRepository;
     private final BookmarkRepository bookmarkRepository;
+
+    public Specification<Article> createSpec(Theme theme, String city, Integer startBudget, Integer endBudget, Integer day) {
+        System.out.println("City = "+ city);
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if(theme != null) {
+                predicates.add(cb.equal(root.join("travel").get("theme"), theme));
+            }
+            if(city != null) {
+                Subquery<Location> locationSubQuery = query.subquery(Location.class);
+                Root<Article> articleRoot = locationSubQuery.correlate(root);
+                Join<Article, Travel> travelJoin = articleRoot.join("travel");
+                ListJoin<Travel, Location> locationsJoin = travelJoin.joinList("locations");
+                locationSubQuery
+                        .select(locationsJoin)
+                        .where(cb.equal(locationsJoin.get("address").get("city"), city));
+
+                predicates.add(cb.exists(locationSubQuery));
+            }
+            if(startBudget != null && endBudget != null) {
+                predicates.add(cb.between(root.get("budget"), startBudget, endBudget));
+            } else if(startBudget != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("budget"), startBudget));
+            } else if(endBudget != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("budget"), endBudget));
+            }
+            if(day != null) {
+                predicates.add(cb.equal(root.join("travel").get("totalDate"), day));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
 
     @Transactional
     public ArticleCreateResponse save(Long travelId) {
@@ -56,7 +95,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleResponse updateArticle(Long articleId, ArticleUpdateRequest request) {
+    public ArticleDetailResponse updateArticle(Long articleId, ArticleUpdateRequest request) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
@@ -78,7 +117,7 @@ public class ArticleService {
         articleRepository.save(article);
         travelRepository.save(travel);
 
-        return new ArticleResponse(article, travel);
+        return new ArticleDetailResponse(article, travel);
     }
 
     @Transactional
@@ -92,7 +131,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleResponse getArticleById(Long articleId){
+    public ArticleDetailResponse getArticleById(Long articleId){
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
@@ -101,7 +140,7 @@ public class ArticleService {
         }
 
         Travel travel = article.getTravel();
-        return new ArticleResponse(article, travel);
+        return new ArticleDetailResponse(article, travel);
     }
 
     @Transactional
@@ -267,7 +306,7 @@ public class ArticleService {
 
 
     @Transactional
-    public List<MyArticleResponse> getMyArticle() {
+    public List<ArticleResponse> getMyArticle() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = (String) authentication.getPrincipal();
 
@@ -282,7 +321,7 @@ public class ArticleService {
             Location firstLocation = travel.getLocations().get(0);
             Photo firstPhoto = firstLocation.getPhotos().get(0);
 
-            return new MyArticleResponse(
+            return new ArticleResponse(
                     article.getId(),
                     firstLocation.getAddress().getCity(),
                     article.getTitle(),
@@ -296,5 +335,47 @@ public class ArticleService {
         }).collect(Collectors.toList());
     }
 
+    @Transactional
+    public List<ArticleResponse> getFilteredAndSortedArticles(String sort, Theme theme, String city, Integer startBudget, Integer endBudget, Integer day) {
+
+        Sort sorting = Sort.unsorted();
+        if(sort != null){
+            switch (sort){
+                case "like":
+                    sorting = Sort.by(Sort.Direction.DESC, "likeCount");
+                    break;
+                case "popular":
+                    sorting = Sort.by(Sort.Direction.DESC, "bookmarkCount");
+                    break;
+                case "recent":
+                    sorting = Sort.by(Sort.Direction.DESC, "id");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        Specification<Article> spec = createSpec(theme, city, startBudget, endBudget, day);
+        List<Article> sortedArticles = articleRepository.findAll(spec, sorting);
+
+        return sortedArticles.stream().map(article -> {
+            Travel travel = article.getTravel();
+
+            Location firstLocation = travel.getLocations().get(0);
+            Photo firstPhoto = firstLocation.getPhotos().get(0);
+
+            return new ArticleResponse(
+                    article.getId(),
+                    firstLocation.getAddress().getCity(),
+                    article.getTitle(),
+                    travel.getStartDate(),
+                    travel.getEndDate(),
+                    firstPhoto.getImgUrl(),
+                    travel.getPhotos().size(),
+                    article.getLikeCount(),
+                    article.getBookmarkCount()
+            );
+        }).collect(Collectors.toList());
+    }
 
 }

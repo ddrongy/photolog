@@ -8,6 +8,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -45,6 +47,9 @@ public class Photo {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Location location;
 
+    @ElementCollection
+    private List<String> tags = new ArrayList<>();
+
     //== 연관관계 편의 메서드 ==//
     public void setTravel (Travel travel) {
         this.travel = travel;
@@ -74,7 +79,7 @@ public class Photo {
     }
 
     //== 생성 메서드 ==//
-    public static Photo createPhoto(Travel travel, String imgUrl, LocalDateTime dateTime, Coordinate coordinate, Address address){
+    public static Photo createPhoto(Travel travel, String imgUrl, LocalDateTime dateTime, Coordinate coordinate, Address address, List<String> tags){
         Photo photo = new Photo();
         photo.setTravel(travel);
         photo.setImgUrl(imgUrl);
@@ -82,6 +87,7 @@ public class Photo {
         photo.setCoordinate(coordinate);
         photo.setAddress(address);
         photo.setHide(false);
+        photo.setTags(tags);
 
         return photo;
     }
@@ -105,5 +111,10 @@ public class Photo {
     public void setHide (Boolean hide) {
         this.hide = hide;
     }
+
+    public void setTags (List<String> tags) {
+        this.tags = tags;
+    }
+
 
 }

@@ -15,6 +15,7 @@ import photolog.api.dto.ResponseDto;
 import photolog.api.service.PhotoService;
 import photolog.api.service.S3Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "photo", description = "사진 API")
@@ -35,10 +36,10 @@ public class PhotoController {
                                                        @RequestPart("lat") Double lat,
                                                        @RequestPart("city") String city,
                                                        @RequestPart("fullAddress") String fullAddress
-                                                       ){
+                                                       ) throws IOException {
 
         String imgPath = s3Service.uploadOne(multipartFile);
-        photoService.photoSave(travelId, imgPath, dateTime, new Coordinate(log, lat), new Address(city, fullAddress));
+        photoService.photoSave(travelId, imgPath, dateTime, new Coordinate(log, lat), new Address(city, fullAddress), multipartFile);
 
         ResponseDto<Long> response = new ResponseDto<>();
         response.setStatus(true);

@@ -1,5 +1,7 @@
 package photolog.api.repository;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import photolog.api.domain.Article;
@@ -11,4 +13,6 @@ import java.util.List;
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<Article> findByUserAndHideIsFalse(User user);
+
+    List<Article> findAll(Specification<Article> spec, Sort sorting);
 }
