@@ -17,7 +17,7 @@ public class ArticleCreateResponse {
     private Long travelId;
     private String title;
     private List<DayDTO> days;
-    private Theme theme;
+    private List<Theme> theme;
 
     public ArticleCreateResponse(Article article, Travel travel) {
         this.articleId = article.getId();

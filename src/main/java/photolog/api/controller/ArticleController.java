@@ -173,7 +173,6 @@ public class ArticleController {
             @RequestParam(required = false) Integer day,
             @RequestParam(required = false) String city) {
 
-        System.out.println("controller city = "+ city);
         List<ArticleResponse> sortedArticle = articleService.getFilteredAndSortedArticles(sort, theme, city, startBudget, endBudget, day);
 
         ResponseDto<List<ArticleResponse>> response = new ResponseDto<>();

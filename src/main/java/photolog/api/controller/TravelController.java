@@ -68,11 +68,11 @@ public class TravelController {
 
     @PatchMapping("/theme/{travelId}")
     @Operation(summary = "여행 theme 설정")
-    public ResponseEntity<ResponseDto<Theme>> changeTitle(@PathVariable Long travelId,
+    public ResponseEntity<ResponseDto<List<Theme>>> changeTitle(@PathVariable Long travelId,
                                                            @RequestBody ThemeRequest request){
-        Theme theme = travelService.updateTheme(travelId, request);
+        List<Theme> theme = travelService.updateTheme(travelId, request);
 
-        ResponseDto<Theme> response = new ResponseDto<>();
+        ResponseDto<List<Theme>> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("set travel theme successful.");
         response.setData(theme);

@@ -5,9 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import photolog.api.domain.Theme;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ThemeRequest {
-    private Theme theme;
+    private List<Theme> theme;
 }

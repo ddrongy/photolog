@@ -161,7 +161,7 @@ public class TravelService {
     }
 
     @Transactional
-    public Theme updateTheme(Long travelId, ThemeRequest request) {
+    public List<Theme> updateTheme(Long travelId, ThemeRequest request) {
         Travel travel = travelRepository.findById(travelId)
                 .orElseThrow(() -> new IllegalArgumentException("Travel not found with id: " + travelId));
 
