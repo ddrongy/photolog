@@ -167,13 +167,13 @@ public class ArticleController {
     @Operation(summary = "article 정렬 및 필터링")
     public ResponseEntity<ResponseDto<List<ArticleResponse>>> getSortedArticles(
             @RequestParam(required = false) String sort,
-            @RequestParam(required = false) Theme theme,
+            @RequestParam(required = false) List<Theme> theme,
             @RequestParam(required = false) Integer startBudget,
             @RequestParam(required = false) Integer endBudget,
             @RequestParam(required = false) Integer day,
-            @RequestParam(required = false) String city) {
+            @RequestParam(required = false) String degree) {
 
-        List<ArticleResponse> sortedArticle = articleService.getFilteredAndSortedArticles(sort, theme, city, startBudget, endBudget, day);
+        List<ArticleResponse> sortedArticle = articleService.getFilteredAndSortedArticles(sort, theme, degree, startBudget, endBudget, day);
 
         ResponseDto<List<ArticleResponse>> response = new ResponseDto<>();
         response.setStatus(true);
