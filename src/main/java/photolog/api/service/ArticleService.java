@@ -31,7 +31,7 @@ public class ArticleService {
     private final ArticleReportRepository articleReportRepository;
     private final BookmarkRepository bookmarkRepository;
 
-    public Specification<Article> createSpec(List<Theme> themes, String city, Integer startBudget, Integer endBudget, Integer day) {
+    public Specification<Article> createSpec(List<Theme> themes, String degree, Integer startBudget, Integer endBudget, Integer day) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -42,14 +42,14 @@ public class ArticleService {
                 }
                 predicates.add(cb.or(themePredicates.toArray(new Predicate[0])));
             }
-            if(city != null) {
+            if(degree != null) {
                 Subquery<Location> locationSubQuery = query.subquery(Location.class);
                 Root<Article> articleRoot = locationSubQuery.correlate(root);
                 Join<Article, Travel> travelJoin = articleRoot.join("travel");
                 ListJoin<Travel, Location> locationsJoin = travelJoin.joinList("locations");
                 locationSubQuery
                         .select(locationsJoin)
-                        .where(cb.equal(locationsJoin.get("address").get("city"), city));
+                        .where(cb.equal(locationsJoin.get("address").get("degree"), degree));
 
                 predicates.add(cb.exists(locationSubQuery));
             }
