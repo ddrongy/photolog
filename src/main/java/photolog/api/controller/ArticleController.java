@@ -167,7 +167,7 @@ public class ArticleController {
     @Operation(summary = "article 정렬 및 필터링")
     public ResponseEntity<ResponseDto<List<ArticleResponse>>> getSortedArticles(
             @RequestParam(required = false) String sort,
-            @RequestParam(required = false) Theme theme,
+            @RequestParam(required = false) List<Theme> theme,
             @RequestParam(required = false) Integer startBudget,
             @RequestParam(required = false) Integer endBudget,
             @RequestParam(required = false) Integer day,

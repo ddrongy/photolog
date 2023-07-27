@@ -31,12 +31,16 @@ public class ArticleService {
     private final ArticleReportRepository articleReportRepository;
     private final BookmarkRepository bookmarkRepository;
 
-    public Specification<Article> createSpec(Theme theme, String city, Integer startBudget, Integer endBudget, Integer day) {
+    public Specification<Article> createSpec(List<Theme> themes, String city, Integer startBudget, Integer endBudget, Integer day) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if(theme != null) {
-                predicates.add(cb.isMember(theme, root.join("travel").get("theme")));
+            if(themes != null && !themes.isEmpty()) {
+                List<Predicate> themePredicates = new ArrayList<>();
+                for (Theme theme : themes) {
+                    themePredicates.add(cb.isMember(theme, root.join("travel").get("theme")));
+                }
+                predicates.add(cb.or(themePredicates.toArray(new Predicate[0])));
             }
             if(city != null) {
                 Subquery<Location> locationSubQuery = query.subquery(Location.class);
@@ -335,7 +339,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public List<ArticleResponse> getFilteredAndSortedArticles(String sort, Theme theme, String city, Integer startBudget, Integer endBudget, Integer day) {
+    public List<ArticleResponse> getFilteredAndSortedArticles(String sort, List<Theme> themes, String city, Integer startBudget, Integer endBudget, Integer day) {
 
         Sort sorting = Sort.unsorted();
         if(sort != null){
@@ -354,7 +358,7 @@ public class ArticleService {
             }
         }
 
-        Specification<Article> spec = createSpec(theme, city, startBudget, endBudget, day);
+        Specification<Article> spec = createSpec(themes, city, startBudget, endBudget, day);
         List<Article> sortedArticles = articleRepository.findAll(spec, sorting);
 
         return sortedArticles.stream().map(article -> {
