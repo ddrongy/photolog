@@ -16,6 +16,7 @@ import photolog.api.repository.TravelRepository;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,26 +39,27 @@ public class PhotoService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(stringDateTime, formatter);
 
-        OkHttpClient client = new OkHttpClient();
-
-        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM);
-
-
-        multipartBodyBuilder.addFormDataPart("image", multipartFile.getOriginalFilename(),
-                RequestBody.create(multipartFile.getBytes(), MediaType.parse(multipartFile.getContentType())));
-
-        Request request = new Request.Builder()
-                .url("http://210.91.210.243:7860/hashtags")
-                .post(multipartBodyBuilder.build())
-                .build();
-        Response response = client.newCall(request).execute();
-
-        String responseBody = response.body().string(); // 위에서 얻은 JSON 문자열
-
-        ObjectMapper mapper = new ObjectMapper();
-        List<String> hashtags = mapper.readValue(responseBody, new TypeReference<List<String>>(){});
-        System.out.println(hashtags);
+//        OkHttpClient client = new OkHttpClient();
+//
+//        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM);
+//
+//
+//        multipartBodyBuilder.addFormDataPart("image", multipartFile.getOriginalFilename(),
+//                RequestBody.create(multipartFile.getBytes(), MediaType.parse(multipartFile.getContentType())));
+//
+//        Request request = new Request.Builder()
+//                .url("http://210.91.210.243:7860/hashtags")
+//                .post(multipartBodyBuilder.build())
+//                .build();
+//        Response response = client.newCall(request).execute();
+//
+//        String responseBody = response.body().string(); // 위에서 얻은 JSON 문자열
+//
+//        ObjectMapper mapper = new ObjectMapper();
+//        List<String> hashtags = mapper.readValue(responseBody, new TypeReference<List<String>>(){});
+        List<String> hashtags = Arrays.asList("임시");
+//        System.out.println(hashtags);
         // photo 생성
         Photo photo = Photo.createPhoto(travel, imgUrl, dateTime, coordinate, address, hashtags);
         photoRepository.save(photo);

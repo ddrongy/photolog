@@ -10,7 +10,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Address {
-
+    private String degree;
     private String city;
     private String fullAddress;
+
+    public Address(String fullAddress) {
+        String[] parts = fullAddress.split(" ");
+        if (parts.length < 3) {
+            throw new IllegalArgumentException("Invalid address format");
+        }
+        this.degree = parts[0];
+        this.city = parts[1];
+        this.fullAddress = fullAddress;
+    }
 }

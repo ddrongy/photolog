@@ -34,12 +34,12 @@ public class PhotoController {
                                                        @RequestPart("dateTime") String dateTime,
                                                        @RequestPart("log") Double log,
                                                        @RequestPart("lat") Double lat,
-                                                       @RequestPart("city") String city,
                                                        @RequestPart("fullAddress") String fullAddress
                                                        ) throws IOException {
 
         String imgPath = s3Service.uploadOne(multipartFile);
-        photoService.photoSave(travelId, imgPath, dateTime, new Coordinate(log, lat), new Address(city, fullAddress), multipartFile);
+
+        photoService.photoSave(travelId, imgPath, dateTime, new Coordinate(log, lat), new Address(fullAddress), multipartFile);
 
         ResponseDto<Long> response = new ResponseDto<>();
         response.setStatus(true);
