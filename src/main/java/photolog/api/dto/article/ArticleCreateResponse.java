@@ -25,7 +25,7 @@ public class ArticleCreateResponse {
         this.days = travel.getDays().stream()
                 .map(DayDTO::new)
                 .collect(Collectors.toList());
-        this.theme = travel.getTheme();
+        this.theme = travel.getTheme().stream().collect(Collectors.toList());
     }
 
     @Getter
