@@ -20,7 +20,7 @@ public class HashTag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String tag;
 
     @ManyToOne(fetch = FetchType.LAZY)
