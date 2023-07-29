@@ -28,7 +28,7 @@ public class ArticleDetailResponse {
                 .map(DayDTO::new)
                 .collect(Collectors.toList());
         this.budget = article.getBudget();
-        this.theme = travel.getTheme();
+        this.theme = travel.getTheme().stream().collect(Collectors.toList());
 
         this.likes = article.getLikeCount();
         this.bookmarks = article.getBookmarkCount();
