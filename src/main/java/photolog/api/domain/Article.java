@@ -49,7 +49,10 @@ public class Article {
     private List<Bookmark> bookmarks = new ArrayList<>();
 
     @Builder
-    public Article(Travel travel, User user) {
+    public Article(String title, String summary, Integer budget, Travel travel, User user) {
+        this.title = title;
+        this.summary = summary;
+        this.budget = budget;
         this.travel = travel;
         travel.setArticle(this);
         this.user = user;

@@ -26,13 +26,14 @@ public class ArticleController {
 
     @PostMapping("/{travelId}")
     @Operation(summary = "게시글 작성")
-    public ResponseEntity<ResponseDto<ArticleCreateResponse>> addArticle(@PathVariable Long travelId) {
-        ArticleCreateResponse addArticleCreateResponse = articleService.save(travelId);
+    public ResponseEntity<ResponseDto<Long>> addArticle(@PathVariable Long travelId,
+                                                        @RequestBody ArticleCreateRequest request) {
+        Long savedId = articleService.save(travelId, request);
 
-        ResponseDto<ArticleCreateResponse> response = new ResponseDto<>();
+        ResponseDto<Long> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("save article successful.");
-        response.setData(addArticleCreateResponse);
+        response.setData(savedId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);

@@ -70,31 +70,38 @@ public class ArticleService {
 
 
     @Transactional
-    public ArticleCreateResponse save(Long travelId) {
+    public Long save(Long travelId, ArticleCreateRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = (String)authentication.getPrincipal();
 
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + userEmail));
 
-        Optional<Travel> travelOpt = travelRepository.findById(travelId);
-        if (travelOpt.isPresent()) {
-            Travel travel = travelOpt.get();
+        Travel travel = travelRepository.findById(travelId)
+                .orElseThrow(() -> new IllegalArgumentException("travel 존재하지 않음"));
+        List<Location> locations = travel.getLocations();
 
-            if (travel.getArticle() != null) {
-                throw new IllegalArgumentException("이미 해당 여행에 생성된 게시글이 존재 합니다.");
-            }
-
-            Article article = Article.builder()
-                    .travel(travel)
-                    .user(user)
-                    .build();
-            articleRepository.save(article);
-            return new ArticleCreateResponse(article, travel);
-        } else {
-            // handle case when travelId does not exist in the database
-            throw new IllegalArgumentException("Travel not found with id: " + travelId);
+        if (travel.getArticle() != null) {
+            throw new IllegalArgumentException("이미 해당 여행에 생성된 게시글이 존재 합니다.");
         }
+
+        Article article = Article.builder()
+                .title(request.getTitle())
+                .summary(request.getSummary())
+                .budget(request.getBudget())
+                .travel(travel)
+                .user(user)
+                .build();
+
+        if (locations.size() != request.getLocationContent().size()) {
+            throw new IllegalArgumentException("article의 Location 수와 실제 location수가 일치하지 않음");
+        }
+        for (int i = 0; i < locations.size(); i++) {
+            locations.get(i).updateContent(request.getLocationContent().get(i));
+        }
+
+        return articleRepository.save(article).getId();
+
     }
 
     @Transactional

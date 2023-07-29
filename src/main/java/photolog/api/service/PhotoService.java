@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
 import photolog.api.domain.Address;
@@ -111,12 +113,21 @@ public class PhotoService {
     }
     @Transactional
     public void delete(Long photoId){
-        Photo photo = photoRepository.findById(photoId)
-                .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));
-        photo.delTravel();
-        photo.delLocation();
+        try {
+            Photo photo = photoRepository.findById(photoId)
+                    .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));
+            photo.delTravel();
+            photo.delLocation();
 
-        photoRepository.deleteById(photoId);
+            photo.getTags().clear();
+            photoRepository.save(photo);  // Persist the change to the database
+
+            photoRepository.deleteById(photoId);
+        } catch (IllegalArgumentException ex) {
+            Logger logger = LoggerFactory.getLogger(getClass());
+            logger.error(ex.getMessage());
+            throw ex;  // Re-throw the exception so it can be handled upstream
+        }
     }
 
 }
