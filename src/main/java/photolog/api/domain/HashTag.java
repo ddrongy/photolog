@@ -23,12 +23,19 @@ public class HashTag {
     @Column(nullable = false, unique = true)
     private String tag;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "photo_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Photo photo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "travel_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Travel travel;
+    public HashTag(Photo photo, String tag) {
+        setPhoto(photo);
+        this.tag = tag;
+    }
+    private void setPhoto (Photo photo) {
+        this.photo = photo;
+        photo.addTag(this);
+    }
+
+
 }

@@ -11,6 +11,7 @@ import photolog.api.domain.*;
 import photolog.api.domain.Address;
 import photolog.api.dto.photo.LocationIdRequest;
 import photolog.api.dto.photo.LocationResponse;
+import photolog.api.repository.HashTagRepository;
 import photolog.api.repository.LocationRepository;
 import photolog.api.repository.PhotoRepository;
 import photolog.api.repository.TravelRepository;
@@ -31,6 +32,7 @@ public class PhotoService {
     private final PhotoRepository photoRepository;
     private final LocationRepository locationRepository;
     private final TravelRepository travelRepository;
+    private final HashTagRepository hashTagRepository;
 
     @Transactional
     public Long photoSave(Long travelId, String imgUrl, String stringDateTime, Coordinate coordinate, Address address, MultipartFile multipartFile) throws IOException {
@@ -51,7 +53,7 @@ public class PhotoService {
                 RequestBody.create(multipartFile.getBytes(), MediaType.parse(multipartFile.getContentType())));
 
         Request request = new Request.Builder()
-                .url("http://210.91.210.243:7860/hashtags")
+                .url("http://210.91.210.243:7860/mplug_hashtags")
                 .post(multipartBodyBuilder.build())
                 .build();
         Response response = client.newCall(request).execute();
@@ -60,10 +62,16 @@ public class PhotoService {
 
         ObjectMapper mapper = new ObjectMapper();
         List<String> hashtags = mapper.readValue(responseBody, new TypeReference<List<String>>(){});
-
+        System.out.println();
         // photo 생성
-        Photo photo = Photo.createPhoto(travel, imgUrl, dateTime, coordinate, address, hashtags);
+        Photo photo = Photo.createPhoto(travel, imgUrl, dateTime, coordinate, address);
         photoRepository.save(photo);
+
+        for (String tag : hashtags) {
+            HashTag hashTag = new HashTag(photo, tag);
+            hashTagRepository.save(hashTag); // Assuming you have a HashTag repository
+        }
+
 
         return photo.getId();
     }
