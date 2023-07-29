@@ -47,8 +47,7 @@ public class Photo {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Location location;
 
-    @OneToMany(mappedBy = "photo", cascade = CascadeType.REMOVE)
-    private final List<HashTag> tags = new ArrayList<>();
+    private String tags;
 
 
     //== 연관관계 편의 메서드 ==//
@@ -80,7 +79,7 @@ public class Photo {
     }
 
     //== 생성 메서드 ==//
-    public static Photo createPhoto(Travel travel, String imgUrl, LocalDateTime dateTime, Coordinate coordinate, Address address){
+    public static Photo createPhoto(Travel travel, String imgUrl, LocalDateTime dateTime, Coordinate coordinate, Address address, String tags){
         Photo photo = new Photo();
         photo.setTravel(travel);
         photo.setImgUrl(imgUrl);
@@ -88,7 +87,12 @@ public class Photo {
         photo.setCoordinate(coordinate);
         photo.setAddress(address);
         photo.setHide(false);
+        photo.setTags(tags);
         return photo;
+    }
+
+    private void setTags(String tags) {
+        this.tags=tags;
     }
 
     private void setDateTime (LocalDateTime dateTime) {
@@ -111,8 +115,5 @@ public class Photo {
         this.hide = hide;
     }
 
-    public void addTag(HashTag tag) {
-        tags.add(tag);
-    }
 
 }
