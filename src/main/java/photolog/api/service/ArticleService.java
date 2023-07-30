@@ -31,10 +31,10 @@ public class ArticleService {
     private final ArticleReportRepository articleReportRepository;
     private final BookmarkRepository bookmarkRepository;
 
-    public Specification<Article> createSpec(List<Theme> themes, String degree, Integer startBudget, Integer endBudget, Integer day) {
+    public Specification<Article> createSpec(List<Theme> themes, String degree, String city, Integer startBudget, Integer endBudget, Integer day) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-
+            System.out.println("city = " + city + " degree = " + degree);
             if(themes != null && !themes.isEmpty()) {
                 List<Predicate> themePredicates = new ArrayList<>();
                 for (Theme theme : themes) {
@@ -50,6 +50,17 @@ public class ArticleService {
                 locationSubQuery
                         .select(locationsJoin)
                         .where(cb.equal(locationsJoin.get("address").get("degree"), degree));
+
+                predicates.add(cb.exists(locationSubQuery));
+            }
+            if(city != null) {
+                Subquery<Location> locationSubQuery = query.subquery(Location.class);
+                Root<Article> articleRoot = locationSubQuery.correlate(root);
+                Join<Article, Travel> travelJoin = articleRoot.join("travel");
+                ListJoin<Travel, Location> locationsJoin = travelJoin.joinList("locations");
+                locationSubQuery
+                        .select(locationsJoin)
+                        .where(cb.equal(locationsJoin.get("address").get("city"), city));
 
                 predicates.add(cb.exists(locationSubQuery));
             }
@@ -333,6 +344,7 @@ public class ArticleService {
 
             return new ArticleResponse(
                     article.getId(),
+                    firstLocation.getAddress().getDegree(),
                     firstLocation.getAddress().getCity(),
                     article.getTitle(),
                     travel.getStartDate(),
@@ -346,8 +358,8 @@ public class ArticleService {
     }
 
     @Transactional
-    public List<ArticleResponse> getFilteredAndSortedArticles(String sort, List<Theme> themes, String city, Integer startBudget, Integer endBudget, Integer day) {
-
+    public List<ArticleResponse> getFilteredAndSortedArticles(String sort, List<Theme> themes, String degree, String city, Integer startBudget, Integer endBudget, Integer day) {
+        System.out.println("get filter !! city = " + city + " degree = " + degree);
         Sort sorting = Sort.unsorted();
         if(sort != null){
             switch (sort){
@@ -365,7 +377,7 @@ public class ArticleService {
             }
         }
 
-        Specification<Article> spec = createSpec(themes, city, startBudget, endBudget, day);
+        Specification<Article> spec = createSpec(themes, degree, city, startBudget, endBudget, day);
         List<Article> sortedArticles = articleRepository.findAll(spec, sorting);
 
         return sortedArticles.stream().map(article -> {
@@ -376,6 +388,7 @@ public class ArticleService {
 
             return new ArticleResponse(
                     article.getId(),
+                    firstLocation.getAddress().getDegree(),
                     firstLocation.getAddress().getCity(),
                     article.getTitle(),
                     travel.getStartDate(),

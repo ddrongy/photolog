@@ -172,9 +172,10 @@ public class ArticleController {
             @RequestParam(required = false) Integer startBudget,
             @RequestParam(required = false) Integer endBudget,
             @RequestParam(required = false) Integer day,
-            @RequestParam(required = false) String degree) {
-
-        List<ArticleResponse> sortedArticle = articleService.getFilteredAndSortedArticles(sort, theme, degree, startBudget, endBudget, day);
+            @RequestParam(required = false) String degree,
+            @RequestParam(required = false) String city) {
+        System.out.println("get controller !! city = " + city + " degree = " + degree);
+        List<ArticleResponse> sortedArticle = articleService.getFilteredAndSortedArticles(sort, theme, degree, city,  startBudget, endBudget, day);
 
         ResponseDto<List<ArticleResponse>> response = new ResponseDto<>();
         response.setStatus(true);
