@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Getter
 public class ArticleResponse {
     private Long id;
+    private String nickname;
     private String degree;
     private String city;
     private String title;

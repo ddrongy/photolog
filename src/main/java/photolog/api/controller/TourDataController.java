@@ -8,8 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import photolog.api.domain.TourData;
 import photolog.api.dto.ResponseDto;
-import photolog.api.dto.photo.LocationResponse;
-import photolog.api.repository.TourDataRepository;
 import photolog.api.service.TourDataService;
 
 import java.util.List;
@@ -36,7 +34,7 @@ public class TourDataController {
                 .body(response);
     }
 
-    @GetMapping("")
+    @GetMapping("/tag")
     @Operation(summary = "keyword로 tourData정보 가져오기")
     public ResponseEntity<ResponseDto<List<TourData>>> getOtherLocations(
             @RequestParam(required = false) String keyword

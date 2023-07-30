@@ -344,6 +344,7 @@ public class ArticleService {
 
             return new ArticleResponse(
                     article.getId(),
+                    article.getUser().getNickName(),
                     firstLocation.getAddress().getDegree(),
                     firstLocation.getAddress().getCity(),
                     article.getTitle(),
@@ -388,6 +389,7 @@ public class ArticleService {
 
             return new ArticleResponse(
                     article.getId(),
+                    article.getUser().getNickName(),
                     firstLocation.getAddress().getDegree(),
                     firstLocation.getAddress().getCity(),
                     article.getTitle(),
