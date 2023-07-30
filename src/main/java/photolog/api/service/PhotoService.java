@@ -11,7 +11,6 @@ import photolog.api.domain.*;
 import photolog.api.domain.Address;
 import photolog.api.dto.photo.LocationIdRequest;
 import photolog.api.dto.photo.LocationResponse;
-import photolog.api.repository.HashTagRepository;
 import photolog.api.repository.LocationRepository;
 import photolog.api.repository.PhotoRepository;
 import photolog.api.repository.TravelRepository;
@@ -19,7 +18,6 @@ import photolog.api.repository.TravelRepository;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,7 +30,6 @@ public class PhotoService {
     private final PhotoRepository photoRepository;
     private final LocationRepository locationRepository;
     private final TravelRepository travelRepository;
-    private final HashTagRepository hashTagRepository;
 
     @Transactional
     public Long photoSave(Long travelId, String imgUrl, String stringDateTime, Coordinate coordinate, Address address, MultipartFile multipartFile) throws IOException {
@@ -62,16 +59,11 @@ public class PhotoService {
 
         ObjectMapper mapper = new ObjectMapper();
         List<String> hashtags = mapper.readValue(responseBody, new TypeReference<List<String>>(){});
-        System.out.println();
+        String joinedHashtags = String.join(", ", hashtags);
+        System.out.println(joinedHashtags);
         // photo 생성
-        Photo photo = Photo.createPhoto(travel, imgUrl, dateTime, coordinate, address);
+        Photo photo = Photo.createPhoto(travel, imgUrl, dateTime, coordinate, address, joinedHashtags);
         photoRepository.save(photo);
-
-        for (String tag : hashtags) {
-            HashTag hashTag = new HashTag(photo, tag);
-            hashTagRepository.save(hashTag); // Assuming you have a HashTag repository
-        }
-
 
         return photo.getId();
     }
@@ -120,22 +112,12 @@ public class PhotoService {
         photoRepository.save(photo);
     }
     @Transactional
-    public void delete(Long photoId){
-        try {
-            Photo photo = photoRepository.findById(photoId)
-                    .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));
-            photo.delTravel();
-            photo.delLocation();
+    public void delete(Long photoId) {
+        Photo photo = photoRepository.findById(photoId)
+                .orElseThrow(() -> new IllegalArgumentException("photo 존재하지 않음"));
+        photo.delTravel();
+        photo.delLocation();
 
-            photo.getTags().clear();
-            photoRepository.save(photo);  // Persist the change to the database
-
-            photoRepository.deleteById(photoId);
-        } catch (IllegalArgumentException ex) {
-            Logger logger = LoggerFactory.getLogger(getClass());
-            logger.error(ex.getMessage());
-            throw ex;  // Re-throw the exception so it can be handled upstream
-        }
+        photoRepository.deleteById(photoId);
     }
-
 }

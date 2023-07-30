@@ -58,6 +58,7 @@ public class SummaryMapResponse {
         private String description;
         private String photoUrl;
         private Coordinate coordinate;
+        private String city;
 
         public LocationDTO(Location location) {
             this.id = location.getId();
@@ -66,6 +67,7 @@ public class SummaryMapResponse {
             this.photoUrl = location.getPhotos().isEmpty() ? null :
                     location.getPhotos().get(0).getImgUrl();
             this.coordinate = location.getCoordinate();
+            this.city = location.getAddress().getCity();
         }
     }
 }
