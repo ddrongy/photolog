@@ -46,7 +46,8 @@ public class Article {
     private List<ArticleReport> reports = new ArrayList<>();
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
-    private List<Bookmark> bookmarks = new ArrayList<>();
+    private List<ArticleBookmark> articleBookmarks = new ArrayList<>();
+
 
     @Builder
     public Article(String title, String summary, Integer budget, Travel travel, User user) {

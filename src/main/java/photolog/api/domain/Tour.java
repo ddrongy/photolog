@@ -4,17 +4,15 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "tour_datas")
-public class TourData {
+public class Tour {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +33,13 @@ public class TourData {
     private String title;
 
     private String tags;
+    private Integer bookmarkCount;
 
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
+    private List<TourBookmark> tourBookmarks = new ArrayList<>();
+
+    public void setBookmarkCount(Integer count) {
+        this.bookmarkCount = count;
+    }
 
 }

@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "bookmarks")
+@Table(name = "article_bookmarks")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Bookmark {
+public class ArticleBookmark {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,7 @@ public class Bookmark {
     @Column(name = "bookmark_time")
     private LocalDateTime bookmarkTime;
 
-    public Bookmark(Article article, User user, LocalDateTime bookmarkTime) {
+    public ArticleBookmark(Article article, User user, LocalDateTime bookmarkTime) {
         this.article = article;
         this.user = user;
         this.bookmarkTime = bookmarkTime;
