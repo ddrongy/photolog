@@ -204,11 +204,9 @@ public class ArticleService {
         user.getLikes().add(articleLike);
 
         article.setLikeCount(article.getLikes().size());
-        articleRepository.save(article);
-
         articleLikeRepository.save(articleLike);
 
-        return article.getLikes().size();
+        return article.getLikeCount();
     }
 
 
@@ -230,11 +228,9 @@ public class ArticleService {
         user.getLikes().remove(likeToRemove);
 
         article.setLikeCount(article.getLikes().size());
-        articleRepository.save(article);
-
         articleLikeRepository.delete(likeToRemove);
 
-        return article.getLikes().size();
+        return article.getLikeCount();
     }
 
     @Transactional
@@ -261,10 +257,9 @@ public class ArticleService {
         user.getArticleBookmarks().add(articleBookmark);
 
         article.setBookmarkCount(article.getArticleBookmarks().size());
-        articleRepository.save(article);
         articleBookmarkRepository.save(articleBookmark);
 
-        return article.getArticleBookmarks().size();
+        return article.getBookmarkCount();
     }
 
 
