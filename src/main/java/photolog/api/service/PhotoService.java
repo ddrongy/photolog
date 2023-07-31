@@ -11,6 +11,8 @@ import photolog.api.domain.*;
 import photolog.api.domain.Address;
 import photolog.api.dto.photo.LocationIdRequest;
 import photolog.api.dto.photo.LocationResponse;
+import photolog.api.dto.photo.PhotoDetailResponse;
+import photolog.api.dto.photo.PhotoTagResponse;
 import photolog.api.repository.LocationRepository;
 import photolog.api.repository.PhotoRepository;
 import photolog.api.repository.TravelRepository;
@@ -18,6 +20,7 @@ import photolog.api.repository.TravelRepository;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,6 +70,41 @@ public class PhotoService {
 
         return photo.getId();
     }
+
+    public List<PhotoTagResponse> findByTagContaining(String keyword) {
+        List<Photo> photos;
+        if(keyword == null || keyword.isEmpty()){
+            photos = photoRepository.findAll();
+        } else {
+            photos = photoRepository.findByTagsContaining(keyword);
+        }
+
+        List<PhotoTagResponse> photoTagResponses = new ArrayList<>();
+        for (Photo photo : photos) {
+            photoTagResponses.add(new PhotoTagResponse(photo.getId(), photo.getImgUrl()));
+        }
+
+        return photoTagResponses;
+    }
+
+    @Transactional
+    public PhotoDetailResponse getDetailInformation(Long photoId){
+        //photo 조회
+        Photo photo = photoRepository.findById(photoId)
+                .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));
+
+        Article article = photo.getTravel().getArticle();
+        Location location = photo.getLocation();
+
+        return new PhotoDetailResponse(
+                article.getId(),
+                photo.getImgUrl(),
+                article.getTitle(),
+                location.getName(),
+                location.getContent()
+                );
+    }
+
     @Transactional
     public List<LocationResponse> getOtherLocations(Long photoId){
         //photo 조회
