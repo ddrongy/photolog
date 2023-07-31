@@ -68,7 +68,7 @@ public class TourDataController {
     @DeleteMapping("/cancelBookmark/{tourId}")
     @Operation(summary = "게시글 bookmark 취소")
     public ResponseEntity<ResponseDto<Integer>> cancelBookmark(@PathVariable Long tourId) {
-        Integer bookmarkCount = tourService.addBookmark(tourId);
+        Integer bookmarkCount = tourService.cancelBookmark(tourId);
 
         ResponseDto<Integer> response = new ResponseDto<>();
         response.setStatus(true);
