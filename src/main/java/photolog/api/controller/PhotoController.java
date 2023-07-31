@@ -9,9 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import photolog.api.domain.Address;
 import photolog.api.domain.Coordinate;
+import photolog.api.domain.Photo;
+import photolog.api.domain.Tour;
 import photolog.api.dto.photo.LocationIdRequest;
 import photolog.api.dto.photo.LocationResponse;
 import photolog.api.dto.ResponseDto;
+import photolog.api.dto.photo.PhotoDetailResponse;
+import photolog.api.dto.photo.PhotoTagResponse;
 import photolog.api.service.PhotoService;
 import photolog.api.service.S3Service;
 
@@ -88,6 +92,36 @@ public class PhotoController {
         ResponseDto<Void> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("photo hide in article successful.");
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping("/tag")
+    @Operation(summary = "keyword로 tourData정보 가져오기")
+    public ResponseEntity<ResponseDto<List<PhotoTagResponse>>> searchPhotoByTags(
+            @RequestParam(required = false) String keyword
+    ){
+
+        List<PhotoTagResponse> byTagContaining = photoService.findByTagContaining(keyword);
+
+        ResponseDto<List<PhotoTagResponse>> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("Get Photo informations by keyword successful.");
+        response.setData(byTagContaining);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping("/{photoId}")
+    @Operation(summary = "photo detail 정보조회")
+    public ResponseEntity<ResponseDto<PhotoDetailResponse>> getDetail(@PathVariable Long photoId) {
+        PhotoDetailResponse detailInformation = photoService.getDetailInformation(photoId);
+        ResponseDto<PhotoDetailResponse> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("Photo get detail info successful.");
+        response.setData(detailInformation);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);

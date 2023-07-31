@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LocationResponse {
-    private Long locationId;
-    private Integer seq;
-    private String FullAddress;
+public class PhotoDetailResponse {
+    private Long articleId;
+    private String photoUrl;
+    private String articleTitle;
     private String locationName;
+    private String locationContent;
 }

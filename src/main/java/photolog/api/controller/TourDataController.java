@@ -6,11 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import photolog.api.domain.TourData;
+import photolog.api.domain.Tour;
 import photolog.api.dto.ResponseDto;
-import photolog.api.dto.photo.LocationResponse;
-import photolog.api.repository.TourDataRepository;
-import photolog.api.service.TourDataService;
+import photolog.api.service.TourService;
 
 import java.util.List;
 
@@ -19,15 +17,15 @@ import java.util.List;
 @RequestMapping("/api/tour")
 @RequiredArgsConstructor
 public class TourDataController {
-    private final TourDataService tourDataService;
+    private final TourService tourService;
 
     @GetMapping("/contentId/{contentId}")
     @Operation(summary = "contentID로 tourDATA 검색하기")
-    public ResponseEntity<ResponseDto<TourData>> searchByContentId(@PathVariable Long contentId){
+    public ResponseEntity<ResponseDto<Tour>> searchByContentId(@PathVariable Long contentId){
 
-        TourData tourData = tourDataService.searchByContentId(contentId);
+        Tour tourData = tourService.searchByContentId(contentId);
 
-        ResponseDto<TourData> response = new ResponseDto<>();
+        ResponseDto<Tour> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("Get tourData information successful.");
         response.setData(tourData);
@@ -36,20 +34,48 @@ public class TourDataController {
                 .body(response);
     }
 
-    @GetMapping("")
+    @GetMapping("/tag")
     @Operation(summary = "keyword로 tourData정보 가져오기")
-    public ResponseEntity<ResponseDto<List<TourData>>> getOtherLocations(
+    public ResponseEntity<ResponseDto<List<Tour>>> getOtherLocations(
             @RequestParam(required = false) String keyword
     ){
 
-        List<TourData> otherLocations = tourDataService.findByTagContaining(keyword);
+        List<Tour> otherLocations = tourService.findByTagContaining(keyword);
 
-        ResponseDto<List<TourData>> response = new ResponseDto<>();
+        ResponseDto<List<Tour>> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("Get Tourdata informations by keyword successful.");
         response.setData(otherLocations);
 
         return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PostMapping("/addBookmark/{tourId}")
+    @Operation(summary = "게시글 bookmark")
+    public ResponseEntity<ResponseDto<Integer>> addBookmark(@PathVariable Long tourId) {
+        Integer bookmarkCount = tourService.addBookmark(tourId);
+
+        ResponseDto<Integer> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("add bookmark successful.");
+        response.setData(bookmarkCount);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @DeleteMapping("/cancelBookmark/{tourId}")
+    @Operation(summary = "게시글 bookmark 취소")
+    public ResponseEntity<ResponseDto<Integer>> cancelBookmark(@PathVariable Long tourId) {
+        Integer bookmarkCount = tourService.cancelBookmark(tourId);
+
+        ResponseDto<Integer> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("cancel bookmark successful.");
+        response.setData(bookmarkCount);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
 }

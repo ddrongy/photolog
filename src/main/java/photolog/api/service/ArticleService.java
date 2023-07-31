@@ -3,7 +3,6 @@ package photolog.api.service;
 import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
@@ -17,7 +16,6 @@ import photolog.api.repository.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -29,7 +27,7 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleReportRepository articleReportRepository;
-    private final BookmarkRepository bookmarkRepository;
+    private final ArticleBookmarkRepository articleBookmarkRepository;
 
     public Specification<Article> createSpec(List<Theme> themes, String degree, String city, Integer startBudget, Integer endBudget, Integer day) {
         return (root, query, cb) -> {
@@ -206,11 +204,9 @@ public class ArticleService {
         user.getLikes().add(articleLike);
 
         article.setLikeCount(article.getLikes().size());
-        articleRepository.save(article);
-
         articleLikeRepository.save(articleLike);
 
-        return article.getLikes().size();
+        return article.getLikeCount();
     }
 
 
@@ -232,11 +228,9 @@ public class ArticleService {
         user.getLikes().remove(likeToRemove);
 
         article.setLikeCount(article.getLikes().size());
-        articleRepository.save(article);
-
         articleLikeRepository.delete(likeToRemove);
 
-        return article.getLikes().size();
+        return article.getLikeCount();
     }
 
     @Transactional
@@ -254,19 +248,18 @@ public class ArticleService {
             throw new IllegalArgumentException("본인 게시글에는 북마크가 불가합니다");
         }
 
-        if (bookmarkRepository.findByArticleAndUser(article, user).isPresent()) {
+        if (articleBookmarkRepository.findByArticleAndUser(article, user).isPresent()) {
             throw new IllegalArgumentException("이미 북마크 한 글 입니다");
         }
 
-        Bookmark bookmark = new Bookmark(article, user, LocalDateTime.now());
-        article.getBookmarks().add(bookmark);
-        user.getBookmarks().add(bookmark);
+        ArticleBookmark articleBookmark = new ArticleBookmark(article, user, LocalDateTime.now());
+        article.getArticleBookmarks().add(articleBookmark);
+        user.getArticleBookmarks().add(articleBookmark);
 
-        article.setBookmarkCount(article.getBookmarks().size());
-        articleRepository.save(article);
-        bookmarkRepository.save(bookmark);
+        article.setBookmarkCount(article.getArticleBookmarks().size());
+        articleBookmarkRepository.save(articleBookmark);
 
-        return article.getBookmarks().size();
+        return article.getBookmarkCount();
     }
 
 
@@ -281,18 +274,16 @@ public class ArticleService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("Article does not exist."));
 
-        Bookmark bookmark = bookmarkRepository.findByArticleAndUser(article, user)
+        ArticleBookmark articleBookmark = articleBookmarkRepository.findByArticleAndUser(article, user)
                 .orElseThrow(() -> new IllegalArgumentException("북마크 하지 않은 글 입니다"));
 
-        article.getBookmarks().remove(bookmark);
-        user.getBookmarks().remove(bookmark);
+        article.getArticleBookmarks().remove(articleBookmark);
+        user.getArticleBookmarks().remove(articleBookmark);
 
-        article.setBookmarkCount(article.getBookmarks().size());
-        articleRepository.save(article);
+        article.setBookmarkCount(article.getArticleBookmarks().size());
+        articleBookmarkRepository.delete(articleBookmark);
 
-        bookmarkRepository.delete(bookmark);
-
-        return article.getLikes().size();
+        return article.getBookmarkCount();
     }
 
     @Transactional
@@ -344,6 +335,7 @@ public class ArticleService {
 
             return new ArticleResponse(
                     article.getId(),
+                    article.getUser().getNickName(),
                     firstLocation.getAddress().getDegree(),
                     firstLocation.getAddress().getCity(),
                     article.getTitle(),
@@ -388,6 +380,7 @@ public class ArticleService {
 
             return new ArticleResponse(
                     article.getId(),
+                    article.getUser().getNickName(),
                     firstLocation.getAddress().getDegree(),
                     firstLocation.getAddress().getCity(),
                     article.getTitle(),

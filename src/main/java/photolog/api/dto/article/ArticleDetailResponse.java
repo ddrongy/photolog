@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ArticleDetailResponse {
     private Long articleId;
+    private String nickname;
     private String title;
     private List<DayDTO> days;
     private Integer budget;
@@ -23,6 +24,7 @@ public class ArticleDetailResponse {
     private Integer bookmarks;
     public ArticleDetailResponse(Article article, Travel travel) {
         this.articleId = article.getId();
+        this.nickname = article.getUser().getNickName();
         this.title = article.getTitle();
         this.days = travel.getDays().stream()
                 .map(DayDTO::new)

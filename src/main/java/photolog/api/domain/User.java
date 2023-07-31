@@ -46,7 +46,10 @@ public class User implements UserDetails {
     private List<ArticleReport> articleReports = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Bookmark> bookmarks = new ArrayList<>();
+    private List<ArticleBookmark> articleBookmarks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<TourBookmark> tourBookmarks = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String nickName, String auth) {
