@@ -6,15 +6,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import photolog.api.domain.TourBookmark;
 import photolog.api.domain.User;
+import photolog.api.dto.tour.TourBookmarkResponse;
 import photolog.api.dto.user.*;
+import photolog.api.repository.TourBookmarkRepository;
 import photolog.api.repository.UserRepository;
 import photolog.api.utils.JwtUtil;
 
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -23,6 +31,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
+    private final TourBookmarkRepository tourBookmarkRepository;
 
     @Value("${spring.jwt.secret}")
     private String secretKey;
@@ -161,6 +170,19 @@ public class UserService {
 
     public void deleteAll() {
         userRepository.deleteAll();
+    }
+
+    public List<TourBookmarkResponse> getTourBookmarks() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String)authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
+        List<TourBookmark> tourBookmarks = tourBookmarkRepository.findByUser(user);
+        return tourBookmarks.stream()
+                .map(tourBookmark -> new TourBookmarkResponse(tourBookmark.getTour()))
+                .collect(Collectors.toList());
     }
 
 }

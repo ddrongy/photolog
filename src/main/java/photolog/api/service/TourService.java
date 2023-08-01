@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
+import photolog.api.dto.tour.TourBookmarkResponse;
 import photolog.api.dto.tour.TourResponse;
 import photolog.api.repository.TourBookmarkRepository;
 import photolog.api.repository.TourRepository;
@@ -91,4 +92,5 @@ public class TourService {
 
         return tour.getTourBookmarks().size();
     }
+
 }
