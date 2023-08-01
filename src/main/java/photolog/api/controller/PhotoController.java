@@ -11,11 +11,8 @@ import photolog.api.domain.Address;
 import photolog.api.domain.Coordinate;
 import photolog.api.domain.Photo;
 import photolog.api.domain.Tour;
-import photolog.api.dto.photo.LocationIdRequest;
-import photolog.api.dto.photo.LocationResponse;
+import photolog.api.dto.photo.*;
 import photolog.api.dto.ResponseDto;
-import photolog.api.dto.photo.PhotoDetailResponse;
-import photolog.api.dto.photo.PhotoTagResponse;
 import photolog.api.service.PhotoService;
 import photolog.api.service.S3Service;
 
@@ -98,7 +95,7 @@ public class PhotoController {
     }
 
     @GetMapping("/tag")
-    @Operation(summary = "keyword로 tourData정보 가져오기")
+    @Operation(summary = "keyword로 photo정보 가져오기")
     public ResponseEntity<ResponseDto<List<PhotoTagResponse>>> searchPhotoByTags(
             @RequestParam(required = false) String keyword
     ){
@@ -120,7 +117,20 @@ public class PhotoController {
         PhotoDetailResponse detailInformation = photoService.getDetailInformation(photoId);
         ResponseDto<PhotoDetailResponse> response = new ResponseDto<>();
         response.setStatus(true);
-        response.setMessage("Photo get detail info successful.");
+        response.setMessage("Photo get tag detail info successful.");
+        response.setData(detailInformation);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping("/tag/{photoId}")
+    @Operation(summary = "photo tag detail 정보조회")
+    public ResponseEntity<ResponseDto<TagDetailResponse>> getTagDetail(@PathVariable Long photoId) {
+        TagDetailResponse detailInformation = photoService.tagDetailResponse(photoId);
+        ResponseDto<TagDetailResponse> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("Photo get tag detail info successful.");
         response.setData(detailInformation);
 
         return ResponseEntity.status(HttpStatus.OK)

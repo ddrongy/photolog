@@ -16,6 +16,7 @@ public class ArticleDetailResponse {
     private Long articleId;
     private String nickname;
     private String title;
+    private String summary;
     private List<DayDTO> days;
     private Integer budget;
     private Member member;
@@ -27,6 +28,7 @@ public class ArticleDetailResponse {
         this.articleId = article.getId();
         this.nickname = article.getUser().getNickName();
         this.title = article.getTitle();
+        this.summary = article.getSummary();
         this.days = travel.getDays().stream()
                 .map(DayDTO::new)
                 .collect(Collectors.toList());

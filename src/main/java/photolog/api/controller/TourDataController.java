@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import photolog.api.domain.User;
 import photolog.api.dto.ResponseDto;
+import photolog.api.dto.photo.PhotoDetailResponse;
 import photolog.api.dto.tour.TourBookmarkResponse;
 import photolog.api.dto.tour.TourResponse;
 import photolog.api.service.TourService;
@@ -52,6 +53,19 @@ public class TourDataController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
+
+//    @GetMapping("/{tourId}")
+//    @Operation(summary = "photo detail 정보조회")
+//    public ResponseEntity<ResponseDto<PhotoDetailResponse>> getDetail(@PathVariable Long tourId) {
+//        PhotoDetailResponse detailInformation = photoService.getDetailInformation(photoId);
+//        ResponseDto<PhotoDetailResponse> response = new ResponseDto<>();
+//        response.setStatus(true);
+//        response.setMessage("Photo get tag detail info successful.");
+//        response.setData(detailInformation);
+//
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .body(response);
+//    }
 
     @PostMapping("/bookmark/{tourId}")
     @Operation(summary = "게시글 bookmark")

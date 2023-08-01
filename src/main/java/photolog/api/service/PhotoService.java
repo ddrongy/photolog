@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
 import photolog.api.domain.Address;
-import photolog.api.dto.photo.LocationIdRequest;
-import photolog.api.dto.photo.LocationResponse;
-import photolog.api.dto.photo.PhotoDetailResponse;
-import photolog.api.dto.photo.PhotoTagResponse;
+import photolog.api.dto.photo.*;
 import photolog.api.repository.LocationRepository;
 import photolog.api.repository.PhotoRepository;
 import photolog.api.repository.TravelRepository;
@@ -104,6 +101,20 @@ public class PhotoService {
                 location.getContent()
                 );
     }
+
+    @Transactional
+    public TagDetailResponse tagDetailResponse (Long photoId){
+        //photo 조회
+        Photo photo = photoRepository.findById(photoId)
+                .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));
+
+        Article article = photo.getTravel().getArticle();
+        Location location = photo.getLocation();
+
+        return new TagDetailResponse(photo);
+    }
+
+
 
     @Transactional
     public List<LocationResponse> getOtherLocations(Long photoId){
