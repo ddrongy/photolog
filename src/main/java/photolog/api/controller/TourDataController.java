@@ -6,8 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import photolog.api.domain.Tour;
+import photolog.api.domain.User;
 import photolog.api.dto.ResponseDto;
+import photolog.api.dto.tour.TourBookmarkResponse;
+import photolog.api.dto.tour.TourResponse;
 import photolog.api.service.TourService;
 
 import java.util.List;
@@ -21,11 +23,11 @@ public class TourDataController {
 
     @GetMapping("/contentId/{contentId}")
     @Operation(summary = "contentID로 tourDATA 검색하기")
-    public ResponseEntity<ResponseDto<Tour>> searchByContentId(@PathVariable Long contentId){
+    public ResponseEntity<ResponseDto<TourResponse>> searchByContentId(@PathVariable Long contentId){
 
-        Tour tourData = tourService.searchByContentId(contentId);
+        TourResponse tourData = tourService.searchByContentId(contentId);
 
-        ResponseDto<Tour> response = new ResponseDto<>();
+        ResponseDto<TourResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("Get tourData information successful.");
         response.setData(tourData);
@@ -36,13 +38,13 @@ public class TourDataController {
 
     @GetMapping("/tag")
     @Operation(summary = "keyword로 tourData정보 가져오기")
-    public ResponseEntity<ResponseDto<List<Tour>>> getOtherLocations(
+    public ResponseEntity<ResponseDto<List<TourResponse>>> getOtherLocations(
             @RequestParam(required = false) String keyword
     ){
 
-        List<Tour> otherLocations = tourService.findByTagContaining(keyword);
+        List<TourResponse> otherLocations = tourService.findByTagContaining(keyword);
 
-        ResponseDto<List<Tour>> response = new ResponseDto<>();
+        ResponseDto<List<TourResponse>> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("Get Tourdata informations by keyword successful.");
         response.setData(otherLocations);
@@ -51,7 +53,7 @@ public class TourDataController {
                 .body(response);
     }
 
-    @PostMapping("/addBookmark/{tourId}")
+    @PostMapping("/bookmark/{tourId}")
     @Operation(summary = "게시글 bookmark")
     public ResponseEntity<ResponseDto<Integer>> addBookmark(@PathVariable Long tourId) {
         Integer bookmarkCount = tourService.addBookmark(tourId);
@@ -65,7 +67,7 @@ public class TourDataController {
                 .body(response);
     }
 
-    @DeleteMapping("/cancelBookmark/{tourId}")
+    @DeleteMapping("/bookmark/{tourId}")
     @Operation(summary = "게시글 bookmark 취소")
     public ResponseEntity<ResponseDto<Integer>> cancelBookmark(@PathVariable Long tourId) {
         Integer bookmarkCount = tourService.cancelBookmark(tourId);
@@ -78,4 +80,6 @@ public class TourDataController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
+
+
 }

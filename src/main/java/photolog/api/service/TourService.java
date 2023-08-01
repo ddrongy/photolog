@@ -8,12 +8,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
+import photolog.api.dto.tour.TourBookmarkResponse;
+import photolog.api.dto.tour.TourResponse;
 import photolog.api.repository.TourBookmarkRepository;
 import photolog.api.repository.TourRepository;
 import photolog.api.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,15 +26,19 @@ public class TourService {
     private final UserRepository userRepository;
     private final TourBookmarkRepository tourBookmarkRepository;
 
-    public List<Tour> findByTagContaining(String keyword) {
+    public List<TourResponse> findByTagContaining(String keyword) {
+        List<Tour> tours;
         if(keyword == null || keyword.isEmpty()){
-            return tourRepository.findAll();
+            tours = tourRepository.findAll();
+        } else {
+            tours = tourRepository.findByTagsContaining(keyword);
         }
-        return tourRepository.findByTagsContaining(keyword);
+        return tours.stream().map(TourResponse::new).collect(Collectors.toList());
     }
 
-    public Tour searchByContentId(Long contentId) {
-        return tourRepository.findByContentId(contentId);
+    public TourResponse searchByContentId(Long contentId) {
+        Tour tour = tourRepository.findByContentId(contentId);
+        return new TourResponse(tour);
     }
 
     @Transactional
@@ -85,4 +92,5 @@ public class TourService {
 
         return tour.getTourBookmarks().size();
     }
+
 }

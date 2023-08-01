@@ -101,6 +101,8 @@ public class ArticleService {
                 .travel(travel)
                 .user(user)
                 .build();
+        article = articleRepository.save(article);
+        travelRepository.save(travel);
 
         if (locations.size() != request.getLocationContent().size()) {
             throw new IllegalArgumentException("article의 Location 수와 실제 location수가 일치하지 않음");
@@ -108,8 +110,8 @@ public class ArticleService {
         for (int i = 0; i < locations.size(); i++) {
             locations.get(i).updateContent(request.getLocationContent().get(i));
         }
-
-        return articleRepository.save(article).getId();
+        System.out.println("travel.article = " + travel.getArticle().getId());
+        return article.getId();
 
     }
 
