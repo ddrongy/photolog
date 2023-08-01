@@ -53,7 +53,7 @@ public class TourDataController {
                 .body(response);
     }
 
-    @PostMapping("/addBookmark/{tourId}")
+    @PostMapping("/bookmark/{tourId}")
     @Operation(summary = "게시글 bookmark")
     public ResponseEntity<ResponseDto<Integer>> addBookmark(@PathVariable Long tourId) {
         Integer bookmarkCount = tourService.addBookmark(tourId);
@@ -67,7 +67,7 @@ public class TourDataController {
                 .body(response);
     }
 
-    @DeleteMapping("/cancelBookmark/{tourId}")
+    @DeleteMapping("/bookmark/{tourId}")
     @Operation(summary = "게시글 bookmark 취소")
     public ResponseEntity<ResponseDto<Integer>> cancelBookmark(@PathVariable Long tourId) {
         Integer bookmarkCount = tourService.cancelBookmark(tourId);

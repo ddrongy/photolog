@@ -67,7 +67,7 @@ public class ArticleController {
                 .body(response);
     }
 
-    @PostMapping("/addLike/{articleId}")
+    @PostMapping("/like/{articleId}")
     @Operation(summary = "게시글 like")
     public ResponseEntity<ResponseDto<Integer>> addLike(@PathVariable Long articleId) {
         Integer likes = articleService.addLike(articleId);
@@ -81,7 +81,7 @@ public class ArticleController {
                 .body(response);
     }
 
-    @DeleteMapping("/cancelLike/{articleId}")
+    @DeleteMapping("/like/{articleId}")
     @Operation(summary = "게시글 like 취소")
     public ResponseEntity<ResponseDto<Integer>> cancelLike(@PathVariable Long articleId) {
         Integer likes = articleService.cancelLike(articleId);
@@ -95,7 +95,7 @@ public class ArticleController {
                 .body(response);
     }
 
-    @PostMapping("/addBookmark/{articleId}")
+    @PostMapping("/bookmark/{articleId}")
     @Operation(summary = "게시글 bookmark")
     public ResponseEntity<ResponseDto<Integer>> addBookmark(@PathVariable Long articleId) {
         Integer bookmarkCount = articleService.addBookmark(articleId);
@@ -109,7 +109,7 @@ public class ArticleController {
                 .body(response);
     }
 
-    @DeleteMapping("/cancelBookmark/{articleId}")
+    @DeleteMapping("/bookmark/{articleId}")
     @Operation(summary = "게시글 bookmark 취소")
     public ResponseEntity<ResponseDto<Integer>> cancelBookmark(@PathVariable Long articleId) {
         Integer bookmarkCount = articleService.cancelBookmark(articleId);
