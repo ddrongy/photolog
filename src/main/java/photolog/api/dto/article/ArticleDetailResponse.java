@@ -31,6 +31,7 @@ public class ArticleDetailResponse {
                 .map(DayDTO::new)
                 .collect(Collectors.toList());
         this.budget = article.getBudget();
+        this.member =article.getMember();
         this.theme = travel.getTheme().stream().collect(Collectors.toList());
 
         this.likes = article.getLikeCount();

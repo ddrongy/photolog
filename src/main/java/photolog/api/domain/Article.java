@@ -1,5 +1,6 @@
 package photolog.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +26,8 @@ public class Article {
 
     private Integer budget;  //20, 40, 60, 80, 100
 
+    @Enumerated(EnumType.STRING)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Member member;
 
     @OneToOne(cascade = CascadeType.REMOVE)
