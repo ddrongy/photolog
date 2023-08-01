@@ -18,6 +18,7 @@ public class ArticleDetailResponse {
     private String title;
     private List<DayDTO> days;
     private Integer budget;
+    private Member member;
     private List<Theme> theme;
 
     private Integer likes;
