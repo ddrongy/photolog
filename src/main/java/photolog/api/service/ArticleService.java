@@ -47,7 +47,7 @@ public class ArticleService {
                 ListJoin<Travel, Location> locationsJoin = travelJoin.joinList("locations");
                 locationSubQuery
                         .select(locationsJoin)
-                        .where(cb.equal(locationsJoin.get("address").get("degree"), degree));
+                        .where(cb.like(locationsJoin.get("address").get("degree"), "%" + degree + "%"));
 
                 predicates.add(cb.exists(locationSubQuery));
             }
@@ -58,7 +58,7 @@ public class ArticleService {
                 ListJoin<Travel, Location> locationsJoin = travelJoin.joinList("locations");
                 locationSubQuery
                         .select(locationsJoin)
-                        .where(cb.equal(locationsJoin.get("address").get("city"), city));
+                        .where(cb.like(locationsJoin.get("address").get("city"), "%" + city + "%"));
 
                 predicates.add(cb.exists(locationSubQuery));
             }
