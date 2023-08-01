@@ -3,6 +3,7 @@ package photolog.api.dto.article;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import photolog.api.domain.Member;
 
 import java.util.List;
 
@@ -14,4 +15,5 @@ public class ArticleCreateRequest {
     private String summary;
     private List<String> locationContent;
     private Integer budget;
+    private Member member;
 }

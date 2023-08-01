@@ -98,6 +98,7 @@ public class ArticleService {
                 .title(request.getTitle())
                 .summary(request.getSummary())
                 .budget(request.getBudget())
+                .member(request.getMember())
                 .travel(travel)
                 .user(user)
                 .build();
@@ -134,6 +135,7 @@ public class ArticleService {
         }
 
         article.setBudget(request.getBudget());
+        article.setMember(request.getMember());
 
         articleRepository.save(article);
         travelRepository.save(travel);

@@ -18,6 +18,7 @@ public class ArticleDetailResponse {
     private String title;
     private List<DayDTO> days;
     private Integer budget;
+    private Member member;
     private List<Theme> theme;
 
     private Integer likes;
@@ -30,6 +31,7 @@ public class ArticleDetailResponse {
                 .map(DayDTO::new)
                 .collect(Collectors.toList());
         this.budget = article.getBudget();
+        this.member =article.getMember();
         this.theme = travel.getTheme().stream().collect(Collectors.toList());
 
         this.likes = article.getLikeCount();
@@ -61,6 +63,8 @@ public class ArticleDetailResponse {
 
         private Long locationId;
         private String name;
+        private String degree;
+        private String city;
         private String content;
         private List<Long> photoIds;
         private List<String> photoUrls;
@@ -69,6 +73,8 @@ public class ArticleDetailResponse {
         public LocationDTO(Location location) {
             this.locationId = location.getId();
             this.name = location.getName();
+            this.degree = location.getAddress().getDegree();
+            this.city = location.getAddress().getCity();
             this.content = location.getContent();
             this.photoIds = location.getPhotos().stream()
                     .filter(photo -> photo.getHide() == false)

@@ -1,5 +1,6 @@
 package photolog.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,10 @@ public class Article {
     private String summary;
 
     private Integer budget;  //20, 40, 60, 80, 100
+
+    @Enumerated(EnumType.STRING)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Member member;
 
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "travel_id", nullable = true)
@@ -50,10 +55,11 @@ public class Article {
 
 
     @Builder
-    public Article(String title, String summary, Integer budget, Travel travel, User user) {
+    public Article(String title, String summary, Integer budget, Member member, Travel travel, User user) {
         this.title = title;
         this.summary = summary;
         this.budget = budget;
+        this.member = member;
         this.travel = travel;
         travel.setArticle(this);
         this.user = user;
@@ -83,4 +89,7 @@ public class Article {
 
     public void setBudget(Integer budget) {this.budget = budget;}
 
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }
