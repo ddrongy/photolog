@@ -2,6 +2,7 @@ package photolog.api.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -11,10 +12,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import photolog.api.domain.TourBookmark;
-import photolog.api.domain.User;
+import photolog.api.domain.*;
+import photolog.api.dto.article.ArticleResponse;
 import photolog.api.dto.tour.TourBookmarkResponse;
 import photolog.api.dto.user.*;
+import photolog.api.repository.ArticleBookmarkRepository;
+import photolog.api.repository.ArticleRepository;
 import photolog.api.repository.TourBookmarkRepository;
 import photolog.api.repository.UserRepository;
 import photolog.api.utils.JwtUtil;
@@ -32,6 +35,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
     private final TourBookmarkRepository tourBookmarkRepository;
+    private final ArticleBookmarkRepository articleBookmarkRepository;
 
     @Value("${spring.jwt.secret}")
     private String secretKey;
@@ -172,6 +176,7 @@ public class UserService {
         userRepository.deleteAll();
     }
 
+    @Transactional
     public List<TourBookmarkResponse> getTourBookmarks() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = (String)authentication.getPrincipal();
@@ -183,6 +188,39 @@ public class UserService {
         return tourBookmarks.stream()
                 .map(tourBookmark -> new TourBookmarkResponse(tourBookmark.getTour()))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<ArticleResponse> getArticleBookmarks() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String)authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
+        List<ArticleBookmark> articleBookmarks = articleBookmarkRepository.findByUser(user);
+
+        return articleBookmarks.stream().map(articleBookmark -> {
+            Article article = articleBookmark.getArticle();
+            Travel travel = article.getTravel();
+
+            Location firstLocation = travel.getLocations().get(0);
+            Photo firstPhoto = firstLocation.getPhotos().get(0);
+
+            return new ArticleResponse(
+                    article.getId(),
+                    article.getUser().getNickName(),
+                    firstLocation.getAddress().getDegree(),
+                    firstLocation.getAddress().getCity(),
+                    article.getTitle(),
+                    travel.getStartDate(),
+                    travel.getEndDate(),
+                    firstPhoto.getImgUrl(),
+                    travel.getPhotos().size(),
+                    article.getLikeCount(),
+                    article.getBookmarkCount()
+            );
+        }).collect(Collectors.toList());
     }
 
 }

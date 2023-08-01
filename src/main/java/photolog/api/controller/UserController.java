@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import photolog.api.dto.article.ArticleResponse;
 import photolog.api.dto.tour.TourBookmarkResponse;
 import photolog.api.dto.user.*;
 import photolog.api.dto.ResponseDto;
@@ -99,7 +100,8 @@ public class UserController {
                 .body(response);
     }
 
-    @GetMapping("/bookmarks")
+    @GetMapping("/tour")
+    @Operation(summary = "투어 북마크 조회")
     public ResponseEntity<ResponseDto<List<TourBookmarkResponse>>> getBookmarkedTours() {
         List<TourBookmarkResponse> tourBookmarkResponses = userService.getTourBookmarks();
 
@@ -107,6 +109,20 @@ public class UserController {
         response.setStatus(true);
         response.setMessage("Get tour Bookmarks successful.");
         response.setData(tourBookmarkResponses);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping("/article")
+    @Operation(summary = "게시글 북마크 조회")
+    public ResponseEntity<ResponseDto<List<ArticleResponse>>> getBookmarkedArticles() {
+        List<ArticleResponse> articleResponses = userService.getArticleBookmarks();
+
+        ResponseDto<List<ArticleResponse>> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("Get article Bookmarks successful.");
+        response.setData(articleResponses);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);

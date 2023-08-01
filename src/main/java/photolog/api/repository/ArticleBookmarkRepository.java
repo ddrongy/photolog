@@ -7,9 +7,12 @@ import photolog.api.domain.Article;
 import photolog.api.domain.ArticleBookmark;
 import photolog.api.domain.User;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ArticleBookmarkRepository extends JpaRepository<ArticleBookmark, Long>, JpaSpecificationExecutor<Article> {
     Optional<ArticleBookmark> findByArticleAndUser(Article article, User user);
+
+    List<ArticleBookmark> findByUser(User user);
 }

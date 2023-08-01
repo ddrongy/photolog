@@ -18,4 +18,5 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<Article> findByUserAndHideIsFalse(User user);
 
     List<Article> findAll(Specification<Article> spec, Sort sorting);
+
 }
