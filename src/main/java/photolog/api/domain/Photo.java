@@ -79,7 +79,7 @@ public class Photo {
     }
 
     //== 생성 메서드 ==//
-    public static Photo createPhoto(Travel travel, String imgUrl, LocalDateTime dateTime, Coordinate coordinate, Address address, String tags){
+    public static Photo createPhoto(Travel travel, String imgUrl, LocalDateTime dateTime, Coordinate coordinate, Address address){
         Photo photo = new Photo();
         photo.setTravel(travel);
         photo.setImgUrl(imgUrl);
@@ -87,11 +87,10 @@ public class Photo {
         photo.setCoordinate(coordinate);
         photo.setAddress(address);
         photo.setHide(false);
-        photo.setTags(tags);
         return photo;
     }
 
-    private void setTags(String tags) {
+    public void setTags(String tags) {
         this.tags=tags;
     }
 
