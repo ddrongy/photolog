@@ -19,7 +19,7 @@ public class Tour {
     @Column(name = "id", updatable = false)
     private Long id;
 
-    //주소 추가
+    private String addr;
     private String cat1;
     private String cat2;
     private String cat3;
