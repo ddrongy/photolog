@@ -3,6 +3,7 @@ package photolog.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class PhotoController {
                                                        @RequestPart("log") Double log,
                                                        @RequestPart("lat") Double lat,
                                                        @RequestPart("fullAddress") String fullAddress
-                                                       ) throws IOException {
+                                                       ) throws IOException, JSONException {
 
         String imgPath = s3Service.uploadOne(multipartFile);
 

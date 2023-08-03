@@ -1,20 +1,30 @@
 package photolog.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import okhttp3.*;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
+import photolog.api.domain.Address;
 import photolog.api.dto.travel.*;
 import photolog.api.repository.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -109,14 +119,80 @@ public class TravelService {
                                 });
 
                         List<Photo> photosInSameLocation = locationEntry.getValue();
+
+                        OkHttpClient client = new OkHttpClient.Builder()
+                                .readTimeout(60, TimeUnit.SECONDS)
+                                .connectTimeout(60, TimeUnit.SECONDS)
+                                .build();
+
+                        List<String> imageUrls = new ArrayList<>();
                         for (Photo photo : photosInSameLocation) {
+                            imageUrls.add(photo.getImgUrl());
+                        }
+
+                        JSONArray jsonArray = new JSONArray(imageUrls);
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("images", jsonArray);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        String jsonPayload = jsonObject.toString();
+
+                        Request request = new Request.Builder()
+                                .url("http://210.91.210.243:7860/hashtag_generator")
+                                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonPayload))
+                                .build();
+
+                        Response response = null;
+                        try {
+                            response = client.newCall(request).execute();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        String responseBody = null;
+                        try {
+                            responseBody = response.body().string();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        ObjectMapper mapper = new ObjectMapper();
+                        List<List<String>> hashtagsLists = null;
+                        try {
+                            hashtagsLists = mapper.readValue(responseBody, new TypeReference<List<List<String>>>(){});
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        for (int i = 0; i < photosInSameLocation.size(); i++) {
+                            Photo photo = photosInSameLocation.get(i);
+                            List<String> hashtags = hashtagsLists.get(i);
+                            String joinedHashtags = String.join(", ", hashtags);
+                            photo.setTags(joinedHashtags);
                             photo.setLocation(location);
                             photoRepository.save(photo);
+                            // 여기서 각 photo 객체에 해시태그를 적용합니다.
                         }
+
+//                        for (int i = 0; i < photosInSameLocation.size(); i++) {
+//                            Photo photo = photosInSameLocation.get(i);
+//                            String hashtags = hashtagsLists.get(i);
+//                            photo.setTags(hashtags);
+//                            photo.setLocation(location);
+//                            photoRepository.save(photo);
+//                        }
+
+//                        for (Photo photo : photosInSameLocation) {
+//                            photo.setLocation(location);
+//                            photoRepository.save(photo);
+//                        }
                     });
             prevDayDate = currentDayDate;  // 이전 날짜를 현재 날짜로 업데이트
 
         }
+
+
 
         int totalDays = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
         travel.updateDate(startDate, endDate, totalDays);
