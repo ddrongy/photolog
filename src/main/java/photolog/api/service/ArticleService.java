@@ -118,6 +118,12 @@ public class ArticleService {
 
     @Transactional
     public ArticleDetailResponse updateArticle(Long articleId, ArticleUpdateRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String)authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
@@ -139,8 +145,15 @@ public class ArticleService {
 
         articleRepository.save(article);
         travelRepository.save(travel);
+        Boolean like=false, bookmark=false;
+        if (articleLikeRepository.findByArticleAndUser(article, user).isPresent()) {
+            like=true;
+        }
+        if (articleBookmarkRepository.findByArticleAndUser(article, user).isPresent()) {
+            bookmark=true;
+        }
 
-        return new ArticleDetailResponse(article, travel);
+        return new ArticleDetailResponse(article, travel, like, bookmark);
     }
 
     @Transactional
@@ -158,12 +171,27 @@ public class ArticleService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("article 존재하지 않음"));
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String)authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
+
         if(article.getHide()){
             throw new IllegalArgumentException("광고/홍보글 신고로 인해 숨김 처리된 글입니다");
         }
 
         Travel travel = article.getTravel();
-        return new ArticleDetailResponse(article, travel);
+        Boolean like=false, bookmark=false;
+        if (articleLikeRepository.findByArticleAndUser(article, user).isPresent()) {
+            like=true;
+        }
+        if (articleBookmarkRepository.findByArticleAndUser(article, user).isPresent()) {
+            bookmark=true;
+        }
+
+        return new ArticleDetailResponse(article, travel, like, bookmark);
     }
 
     @Transactional

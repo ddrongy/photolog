@@ -135,7 +135,7 @@ public class TravelService {
                 .collect(Collectors.toList());
 
         List<String> locationAddressList = travel.getLocations().stream()
-                .map(location -> location.getAddress().getFullAddress())
+                .map(location -> location.getAddress().getDegree() + " " + location.getAddress().getCity())
                 .collect(Collectors.toList());
 
         List<String> locationImgList = travel.getLocations().stream()

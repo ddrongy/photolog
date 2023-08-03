@@ -23,8 +23,11 @@ public class ArticleDetailResponse {
     private List<Theme> theme;
 
     private Integer likes;
+    private Boolean likeStatus;
     private Integer bookmarks;
-    public ArticleDetailResponse(Article article, Travel travel) {
+    private Boolean bookmarkStatus;
+
+    public ArticleDetailResponse(Article article, Travel travel, Boolean like, Boolean bookmark) {
         this.articleId = article.getId();
         this.nickname = article.getUser().getNickName();
         this.title = article.getTitle();
@@ -37,7 +40,9 @@ public class ArticleDetailResponse {
         this.theme = travel.getTheme().stream().collect(Collectors.toList());
 
         this.likes = article.getLikeCount();
+        this.likeStatus=like;
         this.bookmarks = article.getBookmarkCount();
+        this.bookmarkStatus=bookmark;
     }
 
     @Getter
