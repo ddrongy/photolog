@@ -3,15 +3,19 @@ package photolog.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import photolog.api.dto.ResponseDto;
 
+import photolog.api.dto.tour.TagDetailResponse;
 import photolog.api.dto.tour.TourResponse;
 import photolog.api.service.TourService;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "tour", description = "tourData API")
@@ -23,11 +27,11 @@ public class TourDataController {
 
     @GetMapping("/contentId/{contentId}")
     @Operation(summary = "contentID로 tourDATA 검색하기")
-    public ResponseEntity<ResponseDto<TourResponse>> searchByContentId(@PathVariable Long contentId){
+    public ResponseEntity<ResponseDto<TagDetailResponse>> searchByContentId(@PathVariable Long contentId) throws IOException {
 
-        TourResponse tourData = tourService.searchByContentId(contentId);
+        TagDetailResponse tourData = tourService.searchByContentId(contentId);
 
-        ResponseDto<TourResponse> response = new ResponseDto<>();
+        ResponseDto<TagDetailResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("Get tourData information successful.");
         response.setData(tourData);
@@ -38,13 +42,13 @@ public class TourDataController {
 
     @GetMapping("/tag")
     @Operation(summary = "keyword로 tourData정보 가져오기")
-    public ResponseEntity<ResponseDto<List<TourResponse>>> getOtherLocations(
-            @RequestParam(required = false) String keyword
+    public ResponseEntity<ResponseDto<Page<TourResponse>>> getOtherLocations(
+            @RequestParam(required = false) String keyword, Pageable pageable
     ){
 
-        List<TourResponse> otherLocations = tourService.findByTagContaining(keyword);
+        Page<TourResponse> otherLocations = tourService.findByTagContaining(keyword, pageable);
 
-        ResponseDto<List<TourResponse>> response = new ResponseDto<>();
+        ResponseDto<Page<TourResponse>> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("Get Tourdata informations by keyword successful.");
         response.setData(otherLocations);
@@ -52,19 +56,6 @@ public class TourDataController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
-
-//    @GetMapping("/{tourId}")
-//    @Operation(summary = "photo detail 정보조회")
-//    public ResponseEntity<ResponseDto<PhotoDetailResponse>> getDetail(@PathVariable Long tourId) {
-//        PhotoDetailResponse detailInformation = photoService.getDetailInformation(photoId);
-//        ResponseDto<PhotoDetailResponse> response = new ResponseDto<>();
-//        response.setStatus(true);
-//        response.setMessage("Photo get tag detail info successful.");
-//        response.setData(detailInformation);
-//
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .body(response);
-//    }
 
     @PostMapping("/bookmark/{tourId}")
     @Operation(summary = "게시글 bookmark")

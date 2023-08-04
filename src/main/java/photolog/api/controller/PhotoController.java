@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -96,13 +98,12 @@ public class PhotoController {
 
     @GetMapping("/tag")
     @Operation(summary = "keyword로 photo정보 가져오기")
-    public ResponseEntity<ResponseDto<List<PhotoTagResponse>>> searchPhotoByTags(
-            @RequestParam(required = false) String keyword
+    public ResponseEntity<ResponseDto<Page<PhotoTagResponse>>> searchPhotoByTags(
+            @RequestParam(required = false) String keyword, Pageable pageable
     ){
+        Page<PhotoTagResponse> byTagContaining = photoService.findByTagContaining(keyword, pageable);
 
-        List<PhotoTagResponse> byTagContaining = photoService.findByTagContaining(keyword);
-
-        ResponseDto<List<PhotoTagResponse>> response = new ResponseDto<>();
+        ResponseDto<Page<PhotoTagResponse>> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("Get Photo informations by keyword successful.");
         response.setData(byTagContaining);

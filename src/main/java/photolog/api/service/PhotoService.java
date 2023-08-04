@@ -3,6 +3,8 @@ package photolog.api.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
 import photolog.api.domain.Address;
@@ -43,21 +45,16 @@ public class PhotoService {
         return photo.getId();
     }
 
-    public List<PhotoTagResponse> findByTagContaining(String keyword) {
-        List<Photo> photos;
+    public Page<PhotoTagResponse> findByTagContaining(String keyword, Pageable pageable) {
+        Page<Photo> photos;
         if(keyword == null || keyword.isEmpty()){
-            photos = photoRepository.findAll();
+            photos = photoRepository.findAll(pageable);
         } else {
-            photos = photoRepository.findByTagsContaining(keyword);
+            photos = photoRepository.findByTagsContaining(keyword, pageable);
         }
-
-        List<PhotoTagResponse> photoTagResponses = new ArrayList<>();
-        for (Photo photo : photos) {
-            photoTagResponses.add(new PhotoTagResponse(photo.getId(), photo.getImgUrl()));
-        }
-
-        return photoTagResponses;
+        return photos.map(photo -> new PhotoTagResponse(photo.getId(), photo.getImgUrl()));
     }
+
 
     @Transactional
     public PhotoDetailResponse getDetailInformation(Long photoId){
