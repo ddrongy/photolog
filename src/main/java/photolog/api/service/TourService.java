@@ -3,11 +3,15 @@ package photolog.api.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import photolog.api.domain.*;
+import photolog.api.dto.tour.TagDetailResponse;
 import photolog.api.dto.tour.TourBookmarkResponse;
 import photolog.api.dto.tour.TourResponse;
 import photolog.api.repository.TourBookmarkRepository;
@@ -16,11 +20,13 @@ import photolog.api.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TourService {
+
 
     private final TourRepository tourRepository;
     private final UserRepository userRepository;
@@ -38,6 +44,7 @@ public class TourService {
 
     public TourResponse searchByContentId(Long contentId) {
         Tour tour = tourRepository.findByContentId(contentId);
+
         return new TourResponse(tour);
     }
 
