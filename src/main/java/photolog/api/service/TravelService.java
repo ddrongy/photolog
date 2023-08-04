@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 public class TravelService {
@@ -132,11 +131,13 @@ public class TravelService {
 
                         JSONArray jsonArray = new JSONArray(imageUrls);
                         JSONObject jsonObject = new JSONObject();
+
                         try {
                             jsonObject.put("images", jsonArray);
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }
+
 
                         String jsonPayload = jsonObject.toString();
 
