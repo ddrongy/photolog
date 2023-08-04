@@ -174,19 +174,6 @@ public class TravelService {
                             photoRepository.save(photo);
                             // 여기서 각 photo 객체에 해시태그를 적용합니다.
                         }
-
-//                        for (int i = 0; i < photosInSameLocation.size(); i++) {
-//                            Photo photo = photosInSameLocation.get(i);
-//                            String hashtags = hashtagsLists.get(i);
-//                            photo.setTags(hashtags);
-//                            photo.setLocation(location);
-//                            photoRepository.save(photo);
-//                        }
-
-//                        for (Photo photo : photosInSameLocation) {
-//                            photo.setLocation(location);
-//                            photoRepository.save(photo);
-//                        }
                     });
             prevDayDate = currentDayDate;  // 이전 날짜를 현재 날짜로 업데이트
 
