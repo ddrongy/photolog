@@ -121,8 +121,8 @@ public class TravelService {
                         List<Photo> photosInSameLocation = locationEntry.getValue();
 
                         OkHttpClient client = new OkHttpClient.Builder()
-                                .readTimeout(60, TimeUnit.SECONDS)
-                                .connectTimeout(60, TimeUnit.SECONDS)
+                                .readTimeout(180, TimeUnit.SECONDS)
+                                .connectTimeout(180, TimeUnit.SECONDS)
                                 .build();
 
                         List<String> imageUrls = new ArrayList<>();
