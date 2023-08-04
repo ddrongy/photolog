@@ -6,10 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import photolog.api.domain.User;
+
 import photolog.api.dto.ResponseDto;
-import photolog.api.dto.photo.PhotoDetailResponse;
-import photolog.api.dto.tour.TourBookmarkResponse;
+
 import photolog.api.dto.tour.TourResponse;
 import photolog.api.service.TourService;
 

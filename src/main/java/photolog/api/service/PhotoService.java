@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.web.multipart.MultipartFile;
-import okhttp3.*;
 
 @RequiredArgsConstructor
 @Service
