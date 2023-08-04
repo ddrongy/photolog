@@ -3,20 +3,19 @@ package photolog.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import photolog.api.domain.Address;
 import photolog.api.domain.Coordinate;
-import photolog.api.domain.Photo;
-import photolog.api.domain.Tour;
+
 import photolog.api.dto.photo.*;
 import photolog.api.dto.ResponseDto;
 import photolog.api.service.PhotoService;
 import photolog.api.service.S3Service;
-
+import org.json.JSONException;
 import java.io.IOException;
 import java.util.List;
 
