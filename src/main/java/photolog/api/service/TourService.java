@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,14 +45,14 @@ public class TourService {
     private final UserRepository userRepository;
     private final TourBookmarkRepository tourBookmarkRepository;
 
-    public List<TourResponse> findByTagContaining(String keyword) {
-        List<Tour> tours;
+    public Page<TourResponse> findByTagContaining(String keyword, Pageable pageable) {
+        Page<Tour> tours;
         if(keyword == null || keyword.isEmpty()){
-            tours = tourRepository.findAll();
+            tours = tourRepository.findAll(pageable);
         } else {
-            tours = tourRepository.findByTagsContaining(keyword);
+            tours = tourRepository.findByTagsContaining(keyword, pageable);
         }
-        return tours.stream().map(TourResponse::new).collect(Collectors.toList());
+        return tours.map(TourResponse::new);
     }
 
     public TagDetailResponse searchByContentId(Long contentId) throws JsonProcessingException {

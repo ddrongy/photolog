@@ -3,6 +3,8 @@ package photolog.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,13 +42,13 @@ public class TourDataController {
 
     @GetMapping("/tag")
     @Operation(summary = "keyword로 tourData정보 가져오기")
-    public ResponseEntity<ResponseDto<List<TourResponse>>> getOtherLocations(
-            @RequestParam(required = false) String keyword
+    public ResponseEntity<ResponseDto<Page<TourResponse>>> getOtherLocations(
+            @RequestParam(required = false) String keyword, Pageable pageable
     ){
 
-        List<TourResponse> otherLocations = tourService.findByTagContaining(keyword);
+        Page<TourResponse> otherLocations = tourService.findByTagContaining(keyword, pageable);
 
-        ResponseDto<List<TourResponse>> response = new ResponseDto<>();
+        ResponseDto<Page<TourResponse>> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("Get Tourdata informations by keyword successful.");
         response.setData(otherLocations);
