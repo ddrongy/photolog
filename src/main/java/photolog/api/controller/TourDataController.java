@@ -16,7 +16,6 @@ import photolog.api.dto.tour.TourResponse;
 import photolog.api.service.TourService;
 
 import java.io.IOException;
-import java.util.List;
 
 @Tag(name = "tour", description = "tourData API")
 @RestController
