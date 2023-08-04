@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.*;
 
 import photolog.api.dto.ResponseDto;
 
+import photolog.api.dto.tour.TagDetailResponse;
 import photolog.api.dto.tour.TourResponse;
 import photolog.api.service.TourService;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "tour", description = "tourData API")
@@ -23,11 +25,11 @@ public class TourDataController {
 
     @GetMapping("/contentId/{contentId}")
     @Operation(summary = "contentID로 tourDATA 검색하기")
-    public ResponseEntity<ResponseDto<TourResponse>> searchByContentId(@PathVariable Long contentId){
+    public ResponseEntity<ResponseDto<TagDetailResponse>> searchByContentId(@PathVariable Long contentId) throws IOException {
 
-        TourResponse tourData = tourService.searchByContentId(contentId);
+        TagDetailResponse tourData = tourService.searchByContentId(contentId);
 
-        ResponseDto<TourResponse> response = new ResponseDto<>();
+        ResponseDto<TagDetailResponse> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("Get tourData information successful.");
         response.setData(tourData);
