@@ -57,19 +57,6 @@ public class TourDataController {
                 .body(response);
     }
 
-//    @GetMapping("/{tourId}")
-//    @Operation(summary = "photo detail 정보조회")
-//    public ResponseEntity<ResponseDto<PhotoDetailResponse>> getDetail(@PathVariable Long tourId) {
-//        PhotoDetailResponse detailInformation = photoService.getDetailInformation(photoId);
-//        ResponseDto<PhotoDetailResponse> response = new ResponseDto<>();
-//        response.setStatus(true);
-//        response.setMessage("Photo get tag detail info successful.");
-//        response.setData(detailInformation);
-//
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .body(response);
-//    }
-
     @PostMapping("/bookmark/{tourId}")
     @Operation(summary = "게시글 bookmark")
     public ResponseEntity<ResponseDto<Integer>> addBookmark(@PathVariable Long tourId) {

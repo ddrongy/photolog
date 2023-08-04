@@ -1,5 +1,7 @@
 package photolog.api.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +15,6 @@ import java.util.List;
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
 
     @Query("SELECT td FROM Photo td WHERE td.tags LIKE %:keyword%")
-    List<Photo> findByTagsContaining(@Param("keyword") String keyword);
+    Page<Photo> findByTagsContaining(@Param("keyword") String keyword, Pageable pageable);
 
 }
