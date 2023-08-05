@@ -58,6 +58,13 @@ public class TourService {
     public TagDetailResponse searchByContentId(Long contentId) throws JsonProcessingException {
         Tour tour = tourRepository.findByContentId(contentId);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = (String)authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
+
         // api 요청
         String response =
                 webClient
@@ -111,8 +118,12 @@ public class TourService {
         String restdate = root2.path("response").path("body").path("items").path("item").get(0).path("restdate").asText();
         String usetime = root2.path("response").path("body").path("items").path("item").get(0).path("usetime").asText();
 
+        Boolean bookmark=false;
+        if (tourBookmarkRepository.findByTourAndUser(tour, user).isPresent()) {
+            bookmark=true;
+        }
 
-        return new TagDetailResponse(tour, overview, infocenter, restdate, usetime);
+        return new TagDetailResponse(tour, overview, infocenter, restdate, usetime, bookmark);
     }
 
     @Transactional
