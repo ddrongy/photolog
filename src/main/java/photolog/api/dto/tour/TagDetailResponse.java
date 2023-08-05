@@ -15,7 +15,7 @@ public class TagDetailResponse {
     private String cat2;
     private String cat3;
     private String title;
-    private Integer bookmarkCount;
+    private Boolean bookmarkStatus;
 
     private String address;
     private String content;
@@ -24,13 +24,13 @@ public class TagDetailResponse {
     private String restDate;
     private String useTime;
 
-    public TagDetailResponse(Tour tour, String content, String infoCall, String restDate, String useTime) {
+    public TagDetailResponse(Tour tour, String content, String infoCall, String restDate, String useTime, Boolean bookmarkStatus ) {
         this.imageUrl = tour.getFirstimage();
         this.cat1 = tour.getCat1();
         this.cat2 = tour.getCat2();
         this.cat3 = tour.getCat3();
         this.title = tour.getTitle();
-        this.bookmarkCount = tour.getBookmarkCount();
+        this.bookmarkStatus = bookmarkStatus;
 
         this.address = tour.getAddr();
         this.content = content;
