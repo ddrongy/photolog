@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import photolog.api.domain.*;
 import photolog.api.domain.Address;
@@ -45,13 +46,19 @@ public class PhotoService {
         return photo.getId();
     }
 
-    public Page<PhotoTagResponse> findByTagContaining(String keyword, Pageable pageable) {
+    public Page<PhotoTagResponse> findByTagContaining(List<String> keywords, Pageable pageable) {
         Page<Photo> photos;
-        if(keyword == null || keyword.isEmpty()){
+
+        if(keywords == null || keywords.isEmpty()){
             photos = photoRepository.findAll(pageable);
         } else {
-            photos = photoRepository.findByTagsContaining(keyword, pageable);
+            Specification<Photo> spec = Specification.where(null);
+            for (String keyword : keywords) {
+                spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("tags"), "%" + keyword + "%"));
+            }
+            photos = photoRepository.findAll(spec, pageable);
         }
+
         return photos.map(photo -> new PhotoTagResponse(photo.getId(), photo.getImgUrl()));
     }
 

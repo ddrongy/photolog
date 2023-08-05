@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -45,13 +46,19 @@ public class TourService {
     private final UserRepository userRepository;
     private final TourBookmarkRepository tourBookmarkRepository;
 
-    public Page<TourResponse> findByTagContaining(String keyword, Pageable pageable) {
+    public Page<TourResponse> findByTagContaining(List<String> keywords, Pageable pageable) {
         Page<Tour> tours;
-        if(keyword == null || keyword.isEmpty()){
+
+        if(keywords == null || keywords.isEmpty()){
             tours = tourRepository.findAll(pageable);
         } else {
-            tours = tourRepository.findByTagsContaining(keyword, pageable);
+            Specification<Tour> spec = Specification.where(null);
+            for (String keyword : keywords) {
+                spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("tags"), "%" + keyword + "%"));
+            }
+            tours = tourRepository.findAll(spec, pageable);
         }
+
         return tours.map(TourResponse::new);
     }
 
