@@ -58,39 +58,44 @@ public class TourService {
 
     public Page<TourResponse> findByTagContaining(List<String> keywords, Pageable pageable) {
         Page<Tour> tours;
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode input = objectMapper.createObjectNode().putPOJO("tags", keywords);
-
-        try {
-            String response = translateWebClient
-                    .post()
-                    .uri("/translator")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Mono.just(input), JsonNode.class)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-
-            JsonNode translationRoot = objectMapper.readTree(response); // 이름 변경
-            List<String> translatedKeywords = Arrays.asList(objectMapper.convertValue(translationRoot, String[].class)); // 변경된 이름 사용
-
-            // 키워드 사용
-            if (translatedKeywords == null || translatedKeywords.isEmpty()) {
-                tours = tourRepository.findAll(pageable);
-            } else {
-                Specification<Tour> spec = Specification.where(null);
-                for (String keyword : translatedKeywords) {
-                    spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("tags"), "%" + keyword + "%")); // 여기서의 root는 람다식의 파라미터
-                }
-                tours = tourRepository.findAll(spec, pageable);
-            }
-
-            return tours.map(TourResponse::new);
-        } catch (Exception e) {
-            // 예외 처리 코드
-            throw new RuntimeException("Translation failed", e);
+        if (keywords == null || keywords.isEmpty()) {
+            tours = tourRepository.findAll(pageable);
         }
+        else {
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode input = objectMapper.createObjectNode().putPOJO("tags", keywords);
+
+            try {
+                String response = translateWebClient
+                        .post()
+                        .uri("/translator")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(Mono.just(input), JsonNode.class)
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .block();
+
+                JsonNode translationRoot = objectMapper.readTree(response); // 이름 변경
+                List<String> translatedKeywords = Arrays.asList(objectMapper.convertValue(translationRoot, String[].class)); // 변경된 이름 사용
+
+                // 키워드 사용
+                if (translatedKeywords == null || translatedKeywords.isEmpty()) {
+                    tours = tourRepository.findAll(pageable);
+                } else {
+                    Specification<Tour> spec = Specification.where(null);
+                    for (String keyword : translatedKeywords) {
+                        spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("tags"), "%" + keyword + "%")); // 여기서의 root는 람다식의 파라미터
+                    }
+                    tours = tourRepository.findAll(spec, pageable);
+                }
+
+                return tours.map(TourResponse::new);
+            } catch (Exception e) {
+                // 예외 처리 코드
+                throw new RuntimeException("Translation failed", e);
+            }
+        }
+        return tours.map(TourResponse::new);
     }
 
 
