@@ -1,5 +1,7 @@
 package photolog.api.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import photolog.api.domain.*;
 import photolog.api.dto.article.*;
 import photolog.api.repository.*;
@@ -28,6 +31,7 @@ public class ArticleService {
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleReportRepository articleReportRepository;
     private final ArticleBookmarkRepository articleBookmarkRepository;
+    private final LocationRepository locationRepository;
 
     public Specification<Article> createSpec(List<Theme> themes, String degree, String city, Integer startBudget, Integer endBudget, Integer day) {
         return (root, query, cb) -> {
@@ -426,4 +430,31 @@ public class ArticleService {
         }).collect(Collectors.toList());
     }
 
+    public String autoReview(Long locationID, List<String> keyword) {
+        Location location = locationRepository.findById(locationID)
+                .orElseThrow(() -> new UsernameNotFoundException("location 없음"));
+
+        String name = location.getName();
+        String keywordString = String.join(", ", keyword);
+        keywordString = keywordString.replace(" ", "%20").replace(",", "%2C"); // URL 인코딩
+
+        WebClient webClient = WebClient.create("http://52.78.245.131:8000");
+        String uri = String.format("/generate_review?location=%s&keywords=%s", name, keywordString);
+
+        String response = webClient.post()
+                .uri(uri)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response);
+            String review = root.path("review").asText();
+            return review;
+        } catch (Exception e) {
+            // 예외 처리 코드
+            throw new RuntimeException("Review generation failed", e);
+        }
+    }
 }

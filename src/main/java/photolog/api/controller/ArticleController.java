@@ -183,6 +183,23 @@ public class ArticleController {
                 .body(response);
     }
 
+    @GetMapping("/review/{locationID}")
+    @Operation(summary = "자동 리뷰 생성")
+    public ResponseEntity<ResponseDto<String>> searchPhotoByTagsAndLocation(
+            @PathVariable Long locationID,
+            @RequestParam(required = false) List<String> keyword) {
+
+        String review = articleService.autoReview(locationID, keyword);
+
+        ResponseDto<String> response = new ResponseDto<>();
+        response.setStatus(true);
+        response.setMessage("Get Photo informations by keyword and locationID successful.");
+        response.setData(review);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
     @DeleteMapping ("/{articleId}")
     @Operation(summary = "게시글 삭제")
     public ResponseEntity<ResponseDto<Void>> delete(@PathVariable Long articleId) {
