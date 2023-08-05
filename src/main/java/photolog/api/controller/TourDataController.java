@@ -16,6 +16,7 @@ import photolog.api.dto.tour.TourResponse;
 import photolog.api.service.TourService;
 
 import java.io.IOException;
+import java.util.List;
 
 @Tag(name = "tour", description = "tourData API")
 @RestController
@@ -40,12 +41,10 @@ public class TourDataController {
     }
 
     @GetMapping("/tag")
-    @Operation(summary = "keyword로 tourData정보 가져오기")
     public ResponseEntity<ResponseDto<Page<TourResponse>>> getOtherLocations(
-            @RequestParam(required = false) String keyword, Pageable pageable
+            @RequestParam(value = "keyword", required = false) List<String> keywords, Pageable pageable
     ){
-
-        Page<TourResponse> otherLocations = tourService.findByTagContaining(keyword, pageable);
+        Page<TourResponse> otherLocations = tourService.findByTagContaining(keywords, pageable);
 
         ResponseDto<Page<TourResponse>> response = new ResponseDto<>();
         response.setStatus(true);
@@ -55,6 +54,7 @@ public class TourDataController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
+
 
     @PostMapping("/bookmark/{tourId}")
     @Operation(summary = "게시글 bookmark")

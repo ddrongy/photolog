@@ -99,17 +99,16 @@ public class PhotoController {
     @GetMapping("/tag")
     @Operation(summary = "keyword로 photo정보 가져오기")
     public ResponseEntity<ResponseDto<Page<PhotoTagResponse>>> searchPhotoByTags(
-            @RequestParam(required = false) String keyword, Pageable pageable
+            @RequestParam(value = "keyword", required = false) List<String> keywords, Pageable pageable
     ){
-        Page<PhotoTagResponse> byTagContaining = photoService.findByTagContaining(keyword, pageable);
+        Page<PhotoTagResponse> byTagContaining = photoService.findByTagContaining(keywords, pageable);
 
         ResponseDto<Page<PhotoTagResponse>> response = new ResponseDto<>();
         response.setStatus(true);
         response.setMessage("Get Photo informations by keyword successful.");
         response.setData(byTagContaining);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{photoId}")

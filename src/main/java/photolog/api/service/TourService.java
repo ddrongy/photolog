@@ -3,6 +3,7 @@ package photolog.api.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,8 +25,10 @@ import photolog.api.dto.tour.TourResponse;
 import photolog.api.repository.TourBookmarkRepository;
 import photolog.api.repository.TourRepository;
 import photolog.api.repository.UserRepository;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,19 +46,54 @@ public class TourService {
                     .baseUrl("https://apis.data.go.kr/B551011/KorService1")
                     .build();
 
+    private WebClient translateWebClient =
+            WebClient
+                    .builder()
+                    .baseUrl("http://210.91.210.243:7860")
+                    .build();
+
     private final TourRepository tourRepository;
     private final UserRepository userRepository;
     private final TourBookmarkRepository tourBookmarkRepository;
 
-    public Page<TourResponse> findByTagContaining(String keyword, Pageable pageable) {
+    public Page<TourResponse> findByTagContaining(List<String> keywords, Pageable pageable) {
         Page<Tour> tours;
-        if(keyword == null || keyword.isEmpty()){
-            tours = tourRepository.findAll(pageable);
-        } else {
-            tours = tourRepository.findByTagsContaining(keyword, pageable);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode input = objectMapper.createObjectNode().putPOJO("tags", keywords);
+
+        try {
+            String response = translateWebClient
+                    .post()
+                    .uri("/translator")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Mono.just(input), JsonNode.class)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            JsonNode translationRoot = objectMapper.readTree(response); // 이름 변경
+            List<String> translatedKeywords = Arrays.asList(objectMapper.convertValue(translationRoot, String[].class)); // 변경된 이름 사용
+
+            // 키워드 사용
+            if (translatedKeywords == null || translatedKeywords.isEmpty()) {
+                tours = tourRepository.findAll(pageable);
+            } else {
+                Specification<Tour> spec = Specification.where(null);
+                for (String keyword : translatedKeywords) {
+                    spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("tags"), "%" + keyword + "%")); // 여기서의 root는 람다식의 파라미터
+                }
+                tours = tourRepository.findAll(spec, pageable);
+            }
+
+            return tours.map(TourResponse::new);
+        } catch (Exception e) {
+            // 예외 처리 코드
+            throw new RuntimeException("Translation failed", e);
         }
-        return tours.map(TourResponse::new);
     }
+
+
 
     public TagDetailResponse searchByContentId(Long contentId) throws JsonProcessingException {
         Tour tour = tourRepository.findByContentId(contentId);
