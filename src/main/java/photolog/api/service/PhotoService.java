@@ -61,38 +61,43 @@ public class PhotoService {
 
     public Page<PhotoTagResponse> findByTagContaining(List<String> keywords, Pageable pageable) {
         Page<Photo> photos;
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode input = objectMapper.createObjectNode().putPOJO("tags", keywords);
-
-        try {
-            String response = translateWebClient
-                    .post()
-                    .uri("/translator")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Mono.just(input), JsonNode.class)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-
-            JsonNode translationRoot = objectMapper.readTree(response);
-            List<String> translatedKeywords = Arrays.asList(objectMapper.convertValue(translationRoot, String[].class));
-
-            if (translatedKeywords == null || translatedKeywords.isEmpty()) {
-                photos = photoRepository.findAll(pageable);
-            } else {
-                Specification<Photo> spec = Specification.where(null);
-                for (String keyword : translatedKeywords) {
-                    spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("tags"), "%" + keyword + "%"));
-                }
-                photos = photoRepository.findAll(spec, pageable);
-            }
-
-            return photos.map(photo -> new PhotoTagResponse(photo.getId(), photo.getImgUrl()));
-        } catch (Exception e) {
-            // 예외 처리 코드
-            throw new RuntimeException("Translation failed", e);
+        if (keywords == null || keywords.isEmpty()) {
+            photos = photoRepository.findAll(pageable);
         }
+        else {
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode input = objectMapper.createObjectNode().putPOJO("tags", keywords);
+
+            try {
+                String response = translateWebClient
+                        .post()
+                        .uri("/translator")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(Mono.just(input), JsonNode.class)
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .block();
+
+                JsonNode translationRoot = objectMapper.readTree(response);
+                List<String> translatedKeywords = Arrays.asList(objectMapper.convertValue(translationRoot, String[].class));
+                System.out.println(translatedKeywords);
+                if (translatedKeywords == null || translatedKeywords.isEmpty()) {
+                    photos = photoRepository.findAll(pageable);
+                } else {
+                    Specification<Photo> spec = Specification.where(null);
+                    for (String keyword : translatedKeywords) {
+                        spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("tags"), "%" + keyword + "%"));
+                    }
+                    photos = photoRepository.findAll(spec, pageable);
+                }
+
+                return photos.map(photo -> new PhotoTagResponse(photo.getId(), photo.getImgUrl()));
+            } catch (Exception e) {
+                // 예외 처리 코드
+                throw new RuntimeException("Translation failed", e);
+            }
+        }
+        return photos.map(photo -> new PhotoTagResponse(photo.getId(), photo.getImgUrl()));
     }
 
 
