@@ -1,12 +1,17 @@
 package photolog.api.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import photolog.api.domain.*;
 import photolog.api.domain.Address;
 import photolog.api.dto.photo.*;
@@ -18,9 +23,11 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Service
@@ -29,6 +36,12 @@ public class PhotoService {
     private final PhotoRepository photoRepository;
     private final LocationRepository locationRepository;
     private final TravelRepository travelRepository;
+
+    private WebClient translateWebClient =
+            WebClient
+                    .builder()
+                    .baseUrl("http://210.91.210.243:7860")
+                    .build();
 
     @Transactional
     public Long photoSave(Long travelId, String imgUrl, String stringDateTime, Coordinate coordinate, Address address, MultipartFile multipartFile) throws IOException, JSONException {
@@ -49,18 +62,39 @@ public class PhotoService {
     public Page<PhotoTagResponse> findByTagContaining(List<String> keywords, Pageable pageable) {
         Page<Photo> photos;
 
-        if(keywords == null || keywords.isEmpty()){
-            photos = photoRepository.findAll(pageable);
-        } else {
-            Specification<Photo> spec = Specification.where(null);
-            for (String keyword : keywords) {
-                spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("tags"), "%" + keyword + "%"));
-            }
-            photos = photoRepository.findAll(spec, pageable);
-        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode input = objectMapper.createObjectNode().putPOJO("tags", keywords);
 
-        return photos.map(photo -> new PhotoTagResponse(photo.getId(), photo.getImgUrl()));
+        try {
+            String response = translateWebClient
+                    .post()
+                    .uri("/translator")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Mono.just(input), JsonNode.class)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            JsonNode translationRoot = objectMapper.readTree(response);
+            List<String> translatedKeywords = Arrays.asList(objectMapper.convertValue(translationRoot, String[].class));
+
+            if (translatedKeywords == null || translatedKeywords.isEmpty()) {
+                photos = photoRepository.findAll(pageable);
+            } else {
+                Specification<Photo> spec = Specification.where(null);
+                for (String keyword : translatedKeywords) {
+                    spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("tags"), "%" + keyword + "%"));
+                }
+                photos = photoRepository.findAll(spec, pageable);
+            }
+
+            return photos.map(photo -> new PhotoTagResponse(photo.getId(), photo.getImgUrl()));
+        } catch (Exception e) {
+            // 예외 처리 코드
+            throw new RuntimeException("Translation failed", e);
+        }
     }
+
 
 
     @Transactional
