@@ -2,7 +2,6 @@ package photolog.api.dto.photo;
 
 import photolog.api.domain.Article;
 import photolog.api.domain.Photo;
-import photolog.api.domain.Tour;
 import photolog.api.domain.Travel;
 
 public class TagDetailResponse {

@@ -12,6 +12,7 @@ import photolog.api.dto.location.NameAndDescriptionRequest;
 import photolog.api.dto.location.NameRequest;
 import photolog.api.repository.LocationRepository;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,8 +34,8 @@ public class LocationService {
         List<Long> photoIds = photos.stream()
                 .map(Photo::getId)
                 .collect(Collectors.toList());
-
-        return new LocationResponse(location.getId(), location.getSequence(), location.getDate(),
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        return new LocationResponse(location.getId(), location.getSequence(), location.getDate().format(formatter),
                 photoIds, imgUrls, location.getAddress().getFullAddress(), location.getName(), location.getDescription());
     }
     @Transactional

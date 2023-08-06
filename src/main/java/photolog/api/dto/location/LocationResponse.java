@@ -3,7 +3,6 @@ package photolog.api.dto.location;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -11,7 +10,7 @@ import java.util.List;
 public class LocationResponse {
     private Long locationId;
     private Integer sequence;
-    private LocalDate date;
+    private String date;
     private List<Long> photoIdList;
     private List<String> urlList;
     private String fullAddress;
