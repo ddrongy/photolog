@@ -23,6 +23,7 @@ import photolog.api.repository.UserRepository;
 import photolog.api.utils.JwtUtil;
 
 import java.security.SecureRandom;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -199,7 +200,7 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
 
         List<ArticleBookmark> articleBookmarks = articleBookmarkRepository.findByUser(user);
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         return articleBookmarks.stream().map(articleBookmark -> {
             Article article = articleBookmark.getArticle();
             Travel travel = article.getTravel();
@@ -213,8 +214,8 @@ public class UserService {
                     firstLocation.getAddress().getDegree(),
                     firstLocation.getAddress().getCity(),
                     article.getTitle(),
-                    travel.getStartDate(),
-                    travel.getEndDate(),
+                    travel.getStartDate().format(formatter),
+                    travel.getEndDate().format(formatter),
                     firstPhoto.getImgUrl(),
                     travel.getPhotos().size(),
                     article.getLikeCount(),

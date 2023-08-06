@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import photolog.api.domain.*;
 
-import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,13 +51,14 @@ public class ArticleDetailResponse {
 
         private Long dayID;
         private Integer sequence;
-        private LocalDate date;
+        private String date;
         private List<LocationDTO> locations;
 
         public DayDTO(Day day) {
             this.dayID = day.getId();
             this.sequence = day.getSequence();
-            this.date = day.getDate();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            this.date = day.getDate().format(formatter);
             this.locations = day.getLocations().stream()
                     .map(LocationDTO::new)
                     .collect(Collectors.toList());

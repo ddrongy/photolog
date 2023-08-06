@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,8 +14,8 @@ public class ArticleResponse {
     private String degree;
     private String city;
     private String title;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private String startDate;
+    private String endDate;
     private String thumbnail;
     private Integer photoCnt;
     private Integer likes;

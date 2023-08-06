@@ -17,6 +17,7 @@ import photolog.api.dto.article.*;
 import photolog.api.repository.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -362,7 +363,7 @@ public class ArticleService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + userEmail));
 
         List<Article> articles = articleRepository.findByUserAndHideIsFalse(user);
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         return articles.stream().map(article -> {
             Travel travel = article.getTravel();
 
@@ -375,8 +376,8 @@ public class ArticleService {
                     firstLocation.getAddress().getDegree(),
                     firstLocation.getAddress().getCity(),
                     article.getTitle(),
-                    travel.getStartDate(),
-                    travel.getEndDate(),
+                    travel.getStartDate().format(formatter),
+                    travel.getEndDate().format(formatter),
                     firstPhoto.getImgUrl(),
                     travel.getPhotos().size(),
                     article.getLikeCount(),
@@ -407,7 +408,7 @@ public class ArticleService {
 
         Specification<Article> spec = createSpec(themes, degree, city, startBudget, endBudget, day);
         List<Article> sortedArticles = articleRepository.findAll(spec, sorting);
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         return sortedArticles.stream().map(article -> {
             Travel travel = article.getTravel();
 
@@ -420,8 +421,8 @@ public class ArticleService {
                     firstLocation.getAddress().getDegree(),
                     firstLocation.getAddress().getCity(),
                     article.getTitle(),
-                    travel.getStartDate(),
-                    travel.getEndDate(),
+                    travel.getStartDate().format(formatter),
+                    travel.getEndDate().format(formatter),
                     firstPhoto.getImgUrl(),
                     travel.getPhotos().size(),
                     article.getLikeCount(),

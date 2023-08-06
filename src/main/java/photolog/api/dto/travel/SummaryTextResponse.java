@@ -7,7 +7,7 @@ import photolog.api.domain.Location;
 import photolog.api.domain.Photo;
 import photolog.api.domain.Travel;
 
-import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,16 +17,17 @@ public class SummaryTextResponse {
 
     private Long id;
     private String title;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private String startDate;
+    private String endDate;
     private Integer totalDate;
     private List<DayDTO> days;
 
     public SummaryTextResponse(Travel travel) {
         this.id = travel.getId();
         this.title = travel.getTitle();
-        this.startDate = travel.getStartDate();
-        this.endDate = travel.getEndDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        this.startDate = travel.getStartDate().format(formatter);
+        this.endDate = travel.getEndDate().format(formatter);
         this.totalDate = travel.getTotalDate();
         this.days = travel.getDays().stream()
                 .map(DayDTO::new)
@@ -39,13 +40,14 @@ public class SummaryTextResponse {
 
         private Long id;
         private Integer sequence;
-        private LocalDate date;
+        private String date;
         private List<LocationDTO> locations;
 
         public DayDTO(Day day) {
             this.id = day.getId();
             this.sequence = day.getSequence();
-            this.date = day.getDate();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            this.date = day.getDate().format(formatter);
             this.locations = day.getLocations().stream()
                     .map(LocationDTO::new)
                     .collect(Collectors.toList());

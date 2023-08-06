@@ -22,6 +22,7 @@ import photolog.api.repository.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -208,8 +209,9 @@ public class TravelService {
                 .map(location -> location.getPhotos().get(0).getImgUrl())
                 .collect(Collectors.toList());
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         return new CalculateResponse(night, travel.getTotalDate(),
-                travel.getStartDate(), travel.getEndDate(),
+                travel.getStartDate().format(formatter), travel.getEndDate().format(formatter),
                 travel.getLocations().size(), travel.getPhotos().size(), locationIdList,locationAddressList, locationImgList);
     }
 
@@ -259,7 +261,7 @@ public class TravelService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + userEmail));
 
         List<Travel> travels = travelRepository.findByUser(user);
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         return travels.stream().map(travel -> {
             Location firstLocation = travel.getLocations().get(0);
             Photo firstPhoto = firstLocation.getPhotos().get(0);
@@ -268,8 +270,8 @@ public class TravelService {
                     travel.getId(),
                     firstLocation.getAddress().getCity(),
                     travel.getTitle(),
-                    travel.getStartDate(),
-                    travel.getEndDate(),
+                    travel.getStartDate().format(formatter),
+                    travel.getEndDate().format(formatter),
                     firstPhoto.getImgUrl(),
                     travel.getPhotos().size()
             );

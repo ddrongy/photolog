@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,8 +12,8 @@ public class MyLogResponse {
     private Long travelId;
     private String city;
     private String title;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private String startDate;
+    private String endDate;
     private String thumbnail;
     private Integer photoCnt;
 }
