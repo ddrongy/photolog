@@ -42,7 +42,7 @@ public class PhotoController {
 
         String imgPath = s3Service.uploadOne(multipartFile);
 
-        photoService.photoSave(travelId, imgPath, dateTime, new Coordinate(log, lat), new Address(fullAddress), multipartFile);
+        photoService.photoSave(travelId, imgPath, dateTime, new Coordinate(log, lat), new Address(fullAddress));
 
         ResponseDto<Long> response = new ResponseDto<>();
         response.setStatus(true);
