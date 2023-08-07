@@ -44,7 +44,7 @@ public class PhotoService {
                     .build();
 
     @Transactional
-    public Long photoSave(Long travelId, String imgUrl, String stringDateTime, Coordinate coordinate, Address address, MultipartFile multipartFile) throws IOException, JSONException {
+    public Long photoSave(Long travelId, String imgUrl, String stringDateTime, Coordinate coordinate, Address address) throws IOException, JSONException {
         // travel 조회
         Travel travel = travelRepository.findById(travelId)
                 .orElseThrow(()-> new IllegalArgumentException("photo 존재하지 않음"));

@@ -183,13 +183,12 @@ public class ArticleController {
                 .body(response);
     }
 
-    @GetMapping("/review/{locationID}")
+    @GetMapping("/review")
     @Operation(summary = "자동 리뷰 생성")
     public ResponseEntity<ResponseDto<String>> searchPhotoByTagsAndLocation(
-            @PathVariable Long locationID,
             @RequestParam(required = false) List<String> keyword) {
 
-        String review = articleService.autoReview(locationID, keyword);
+        String review = articleService.autoReview(keyword);
 
         ResponseDto<String> response = new ResponseDto<>();
         response.setStatus(true);

@@ -431,16 +431,13 @@ public class ArticleService {
         }).collect(Collectors.toList());
     }
 
-    public String autoReview(Long locationID, List<String> keyword) {
-        Location location = locationRepository.findById(locationID)
-                .orElseThrow(() -> new UsernameNotFoundException("location 없음"));
+    public String autoReview(List<String> keyword) {
 
-        String name = location.getName();
         String keywordString = String.join(", ", keyword);
         keywordString = keywordString.replace(" ", "%20").replace(",", "%2C"); // URL 인코딩
 
         WebClient webClient = WebClient.create("http://52.78.245.131:8000");
-        String uri = String.format("/generate_review?location=%s&keywords=%s", name, keywordString);
+        String uri = String.format("/generate_review?keywords=%s", keywordString);
 
         String response = webClient.post()
                 .uri(uri)
