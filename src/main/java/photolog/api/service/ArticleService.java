@@ -2,6 +2,8 @@ package photolog.api.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import photolog.api.domain.*;
 import photolog.api.dto.article.*;
 import photolog.api.repository.*;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -431,27 +434,38 @@ public class ArticleService {
         }).collect(Collectors.toList());
     }
 
-    public String autoReview(List<String> keyword) {
+    public String autoReview(List<String> keywords) {
+        if (keywords == null || keywords.isEmpty()) {
+            throw new IllegalArgumentException("Keyword list should not be empty");
+        }
 
-        String keywordString = String.join(", ", keyword);
-        keywordString = keywordString.replace(" ", "%20").replace(",", "%2C"); // URL 인코딩
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode requestBody = mapper.createObjectNode();
+        ArrayNode keywordArray = mapper.createArrayNode();
 
-        WebClient webClient = WebClient.create("http://52.78.245.131:8000");
-        String uri = String.format("/generate_review?keywords=%s", keywordString);
+        // Adding the keywords from the list (excluding the first element) to the array
+        for (int i = 1; i < keywords.size(); i++) {
+            keywordArray.add(keywords.get(i));
+        }
 
-        String response = webClient.post()
-                .uri(uri)
+        requestBody.put("location", keywords.get(0));
+        requestBody.set("keywords", keywordArray);
+        requestBody.put("emoticon", false);
+        requestBody.put("tone", "잔잔한");
+        requestBody.put("temp", 0.7);
+
+        WebClient webClient = WebClient.create("http://210.91.210.243:7860");
+
+        Mono<String> response = webClient.post()
+                .uri("/review_generator")
+                .header("Content-Type", "application/json")
+                .bodyValue(requestBody.toString())
                 .retrieve()
-                .bodyToMono(String.class)
-                .block();
+                .bodyToMono(String.class);
 
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(response);
-            String review = root.path("review").asText();
-            return review;
+            return response.block();
         } catch (Exception e) {
-            // 예외 처리 코드
             throw new RuntimeException("Review generation failed", e);
         }
     }
