@@ -94,7 +94,7 @@
     - theme의 경우 별도 불러오기 없이 travel 정보에서 가져오기(사실상 content, budget 제외 기본정보 default setting)
     - 이외 travel Info GET: travel title, location description
 5. 게시글 삭제  
-    - 삭제 시 travel, user의 article에서도 삭제되야함  → 확인 해봐야 !!!!
+    - 삭제 시 travel, user의 article에서도 삭제되야함
 6. budget 저장 
     - 1원 단위로 저장 → 앱 내에서는 간편하게 버튼으로 약 20만원 단위로 설정 가능
 - hide 0인 글만 처리 hide 처리된 글은 볼 수 없어야함
@@ -123,7 +123,7 @@
 6. 예산
     - 원 단위
 7. 사진 
-    - Photo Table에서 article(Boolean) 값이 true로 설정된 경우만 볼 수 있음 ⭕️
+    - Photo Table에서 article(Boolean) 값이 true로 설정된 경우만 볼 수 있음
     - photo hide 시키는 controller 작성
         
         
