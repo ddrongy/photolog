@@ -31,7 +31,7 @@
     - theme 변경 시 + 연결된 article이 있는 경우 article의 theme도 같이 변경해줘야 함
 4. text summary, map summary 
     - 혹시나 추가로 더 들어가는 정보 있다면 수정 진행 (현재 text sum에는 Urls로 전달중)
-5. 내 여행 로그 불러오기  →  지금  N+1 문제 발생 - entityGraph, fetchJoin 
+5. 내 여행 로그 불러오기  →  지금  N+1 문제 발생 batchSize
 6. travel 삭제
 
 ### 부가 기능
